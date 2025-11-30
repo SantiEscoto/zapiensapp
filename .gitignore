@@ -42,3 +42,8 @@ app-example
 
 expo-env.d.ts
 # @end expo-cli
+
+# Next.js build files
+website/zapiens/.next/
+website/zapiens/out/
+website/zapiens/node_modules/
