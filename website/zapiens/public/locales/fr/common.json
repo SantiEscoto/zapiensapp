@@ -1,0 +1,48 @@
+{
+  "nav": {
+    "news": "Actualités",
+    "help": "Aide",
+    "faq": "FAQ",
+    "search": "Recherche"
+  },
+  "footer": {
+    "home": "Accueil",
+    "about": "À propos",
+    "terms": "Conditions",
+    "contact": "Contact"
+  },
+  "section1": {
+    "title": "Une application pour tout apprendre",
+    "subtitle": "Rejoignez-nous et faites partie de cette révolution"
+  },
+  "section2": {
+    "title": {
+      "part1": "Il est temps de",
+      "highlight": "moderniser",
+      "part2": "l'éducation"
+    },
+    "subtitle": "Cartes mémoire IA, jeux qui stimulent votre esprit et une communauté mondiale de curieux innovateurs",
+    "cta": "Obtenir Maintenant"
+  },
+  "section3": {
+    "title": "Nous apprenons les uns des autres",
+    "subtitle": "En comprenant les sujets qui vous plaisent, nous vous proposons des cours qui pourraient vous intéresser"
+  },
+  "section4": {
+    "title": {
+      "part1": "Un tuteur",
+      "highlight": "vraiment",
+      "part2": "personnel"
+    },
+    "subtitle": "Nous comprenons votre méthode d'apprentissage et vous fournissons des outils pour pratiquer vos cours"
+  },
+  "section5": {
+    "title": {
+      "highlight1": "Apprendre",
+      "part1": "Ensemble,",
+      "highlight2": "Grandir",
+      "part2": "Ensemble."
+    },
+    "subtitle": "Nous croyons en l'accès libre à la connaissance, construit par des apprenants pour des apprenants"
+  }
+}

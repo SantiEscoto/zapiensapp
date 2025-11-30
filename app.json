@@ -1,10 +1,53 @@
 {
   "expo": {
-    "scheme": "acme",
+    "name": "ZapCards",
+    "slug": "zapcards",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#131f24"
+    },
+    "assetBundlePatterns": [
+      "assets/fonts/*",
+      "assets/icons/*",
+      "assets/flags/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.zapcards.app",
+      "buildNumber": "1.0.0",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#131f24"
+      },
+      "package": "com.zapcards.app",
+      "versionCode": 1
+    },
+    "scheme": "zapcards",
+    "newArchEnabled": true,
     "plugins": [
       "expo-router"
     ],
-    "name": "ZapCards",
-    "slug": "ZapCards"
+    "experiments": {
+      "tsconfigPaths": true,
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "your-project-id"
+      }
+    }
   }
-}
+} 

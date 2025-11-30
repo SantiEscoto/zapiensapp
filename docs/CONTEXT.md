@@ -1,170 +1,178 @@
-# ZapCards - Memorize and Learn
+# ZapCards - Memorizar y Aprender
 
-## Problem Statement
-Users struggle with information retention while learning new subjects. Current solutions in the market present several limitations:
-- Lack of free, ad-free flashcard applications
-- Limited advanced educational features
-- Need for user-generated content marketplace
-- Insufficient tools for effective learning retention
+## Planteamiento del Problema
+Los usuarios tienen dificultades con la retención de información mientras aprenden nuevas materias. Las soluciones actuales en el mercado presentan varias limitaciones:
+- Falta de aplicaciones de tarjetas de memoria gratuitas y sin publicidad
+- Características educativas avanzadas limitadas
+- Necesidad de un mercado de contenido generado por usuarios
+- Herramientas insuficientes para la retención efectiva del aprendizaje
 
-## Project Vision
-ZapCards aims to be a simple yet powerful flashcard application focused on three core principles:
-1. Memorize
-2. Learn
-3. Share
+## Visión del Proyecto
+ZapCards aspira a ser una aplicación de tarjetas de memoria simple pero poderosa enfocada en tres principios fundamentales:
+1. Memorizar
+2. Aprender
+3. Compartir
 
-## Core Features
+## Características Principales
 
-### 1. Collection Management
-Users can manage their flashcard collections through two main interfaces:
+### 1. Gestión de Colecciones
+Los usuarios pueden gestionar sus colecciones de tarjetas a través de dos interfaces principales:
 
-#### 1.1 Collection Dashboard
-- **Flashcard Deck Interface**
-  - Creator profile view
-  - Individual flashcard details
-  - Classic review mode
-    - Audio pronunciation
-    - Card flipping mechanism
-    - Difficulty-based spaced repetition
-      - Easy cards appear less frequently
-      - Hard cards appear more frequently
-  - Learning mini-games
-    - Quick review
-    - Card matching
-    - Stack building
-    - Jumpman game
-  - User comments
-  - Collection management tools
+#### 1.1 Panel de Colecciones
+- **Interfaz de Mazos de Tarjetas**
+  - Vista del perfil del creador
+  - Detalles individuales de las tarjetas
+  - Modo de repaso clásico
+    - Pronunciación de audio
+    - Mecanismo de volteo de tarjetas
+    - Repetición espaciada basada en dificultad
+      - Las tarjetas fáciles aparecen con menos frecuencia
+      - Las tarjetas difíciles aparecen con más frecuencia
+  - Mini-juegos de aprendizaje
+    - Repaso rápido
+    - Emparejamiento de tarjetas
+    - Construcción de pilas
+    - Juego Jumpman
+  - Comentarios de usuarios
+  - Herramientas de gestión de colecciones
 
-#### 1.2 Discovery Tab
-- **Search & Recommendations**
-  - Default view shows recommendations
-  - Search functionality
-  - Advanced filtering options
-    - Language
-    - Sorting preferences
-    - Additional filters
+#### 1.2 Pestaña de Descubrimiento
+- **Búsqueda y Recomendaciones**
+  - Vista predeterminada muestra recomendaciones
+  - Funcionalidad de búsqueda
+  - Opciones de filtrado avanzado
+    - Idioma
+    - Preferencias de ordenamiento
+    - Filtros adicionales
 
-## User Journey
-1. Access collection dashboard or discover new content
-2. Select a flashcard deck
-3. Choose learning mode (classic review or mini-games)
-4. Practice and track progress
-5. Engage with community through comments
+## Recorrido del Usuario
+1. Acceder al panel de colecciones o descubrir nuevo contenido
+2. Seleccionar un mazo de tarjetas
+3. Elegir modo de aprendizaje (repaso clásico o mini-juegos)
+4. Practicar y seguir el progreso
+5. Interactuar con la comunidad a través de comentarios
 
-## Key Differentiators
-- Clean, ad-free experience
-- Focus on simplicity and effectiveness
-- Community-driven content
-- Engaging learning mechanics
+## Diferenciadores Clave
+- Experiencia limpia, sin publicidad
+- Enfoque en simplicidad y efectividad
+- Contenido impulsado por la comunidad
+- Mecánicas de aprendizaje atractivas
 
-## Tech Stack
-- Frontend: React Native with TypeScript, Expo and Expo Router
-- Backend/Database: Supabase
-- UI Framework: React Native Paper
-- AI Processing: DeepSeek
+## Stack Tecnológico
+### Frontend
+- React Native (v0.72+)
+- TypeScript para desarrollo con tipos seguros
+- Expo SDK para desarrollo multiplataforma
+- Expo Router para gestión de navegación
+- React Native Paper para componentes UI
 
-## Database Schema
+### Backend y Base de Datos
+- Supabase para servicios backend
+  - Base de datos PostgreSQL
+  - Servicios de autenticación
+  - Suscripciones en tiempo real
+  - Gestión de almacenamiento
 
-### Users Table
-```sql
-users (
-  id uuid primary key,
-  email text unique not null,
-  username text unique not null,
-  avatar_url text,
-  created_at timestamp with time zone default now(),
-  last_login timestamp with time zone
-)
-```
+### Integración de IA
+- DeepSeek para procesamiento de IA
+  - Comprensión del lenguaje natural
+  - Generación de contenido
+  - Soporte de traducción de idiomas
 
-### Collections Table
-```sql
-collections (
-  id uuid primary key,
-  creator_id uuid references users(id),
-  title text not null,
-  description text,
-  is_public boolean default true,
-  category text,
-  language text,
-  created_at timestamp with time zone default now(),
-  updated_at timestamp with time zone default now()
-)
-```
+## Guías de Desarrollo
+### Estilo de Código
+- Seguir las mejores prácticas de TypeScript
+  - Usar verificación estricta de tipos
+  - Implementar interfaces apropiadas
+  - Evitar tipo any cuando sea posible
+- Usar componentes funcionales con hooks
+  - Preferir useState y useEffect
+  - Implementar hooks personalizados para lógica reutilizable
+- Implementar manejo de errores adecuado
+  - Usar bloques try/catch
+  - Implementar límites de error
+  - Registrar errores apropiadamente
+- Escribir comentarios significativos en español
+  - Documentar lógica compleja
+  - Explicar reglas de negocio
+  - Incluir JSDoc para funciones
+- Usar convenciones de nomenclatura consistentes
+  - PascalCase para componentes
+  - camelCase para variables y funciones
+  - UPPER_CASE para constantes
 
-### Flashcards Table
-```sql
-flashcards (
-  id uuid primary key,
-  collection_id uuid references collections(id),
-  front_content text not null,
-  back_content text not null,
-  audio_url text,
-  created_at timestamp with time zone default now(),
-  updated_at timestamp with time zone default now()
-)
-```
+### Pruebas
+- Escribir pruebas unitarias para utilidades
+  - Jest para framework de pruebas
+  - React Testing Library para componentes
+  - Objetivos de cobertura: 80%+
+- Implementar pruebas de componentes
+  - Probar interacciones de usuario
+  - Verificar renderizado de componentes
+  - Comprobar gestión de estado
+- Realizar pruebas de integración
+  - Probar integraciones de API
+  - Verificar flujos de navegación
+  - Probar persistencia de datos
+- Realizar revisiones de QA regulares
+  - Sesiones de pruebas manuales
+  - Verificación entre dispositivos
+  - Monitoreo de rendimiento
 
-### User_Progress Table
-```sql
-user_progress (
-  id uuid primary key,
-  user_id uuid references users(id),
-  flashcard_id uuid references flashcards(id),
-  difficulty_level integer,
-  next_review timestamp with time zone,
-  review_count integer default 0,
-  last_reviewed timestamp with time zone,
-  unique(user_id, flashcard_id)
-)
-```
+## Proceso de Despliegue
+1. Revisión de Código
+   - Creación de pull request
+   - Verificación de calidad de código
+   - Revisión de documentación
+   - Análisis de impacto en rendimiento
 
-### Comments Table
-```sql
-comments (
-  id uuid primary key,
-  user_id uuid references users(id),
-  collection_id uuid references collections(id),
-  content text not null,
-  created_at timestamp with time zone default now(),
-  updated_at timestamp with time zone default now()
-)
-```
+2. Verificación de Pruebas
+   - Ejecutar pruebas automatizadas
+   - Lista de verificación de pruebas manuales
+   - Verificación multiplataforma
+   - Evaluación de rendimiento
 
-### User_Collections Table
-```sql
-user_collections (
-  user_id uuid references users(id),
-  collection_id uuid references collections(id),
-  role text default 'viewer',
-  created_at timestamp with time zone default now(),
-  primary key (user_id, collection_id)
-)
-```
+3. Despliegue en Staging
+   - Desplegar a ambiente de staging
+   - Pruebas de integración
+   - Pruebas de aceptación de usuario
+   - Monitoreo de rendimiento
 
-## Project Structure
+4. Lanzamiento a Producción
+   - Etiquetado de versión
+   - Actualización de changelog
+   - Despliegue a producción
+   - Verificación post-despliegue
+
+## Estructura del Proyecto
 ```
 zapcards/
-├── app/                     # Expo Router app directory
-│   ├── (auth)/             # Authentication routes
-│   ├── (tabs)/             # Main tab navigation
-│   └── _layout.tsx         # Root layout
+├── app/                     # Directorio de Expo Router
+│   ├── (auth)/             # Rutas de autenticación
+│   ├── (tabs)/             # Navegación principal por tabs
+│   └── _layout.tsx         # Layout raíz
 ├── src/
-│   ├── components/         # Reusable components
-│   │   ├── cards/          # Flashcard related components
-│   │   ├── common/         # Common UI components
-│   │   └── games/          # Mini-game components
-│   ├── hooks/              # Custom React hooks
-│   ├── services/           # API and external services
-│   │   ├── supabase/       # Supabase client and queries
-│   │   └── ai/             # AI integration services
-│   ├── store/              # Global state management
-│   ├── types/              # TypeScript type definitions
-│   └── utils/              # Helper functions and constants
-├── assets/                 # Static assets
+│   ├── components/         # Componentes reutilizables
+│   │   ├── cards/          # Componentes relacionados con tarjetas
+│   │   ├── common/         # Componentes UI comunes
+│   │   └── games/          # Componentes de mini-juegos
+│   ├── hooks/              # Hooks personalizados de React
+│   ├── services/           # API y servicios externos
+│   │   ├── supabase/       # Cliente y consultas de Supabase
+│   │   └── ai/             # Servicios de integración de IA
+│   ├── store/              # Gestión de estado global
+│   ├── types/              # Definiciones de tipos TypeScript
+│   └── utils/              # Funciones auxiliares y constantes
+├── assets/                 # Activos estáticos
 │   ├── images/
 │   └── sounds/
-├── docs/                   # Project documentation
-└── config/                 # Configuration files
+├── docs/                   # Documentación del proyecto
+└── config/                 # Archivos de configuración
 ```
+
+## Guías de Contribución
+1. Hacer fork del repositorio
+2. Crear rama de feature
+3. Seguir guías de estilo de código
+4. Enviar pull request
+5. Esperar revisión y aprobación

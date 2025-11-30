@@ -1,0 +1,48 @@
+{
+  "nav": {
+    "news": "Nachrichten",
+    "help": "Hilfe",
+    "faq": "FAQ",
+    "search": "Suche"
+  },
+  "footer": {
+    "home": "Startseite",
+    "about": "Über uns",
+    "terms": "Bedingungen",
+    "contact": "Kontakt"
+  },
+  "section1": {
+    "title": "Eine App, um alles zu lernen",
+    "subtitle": "Schließen Sie sich uns an und werden Sie Teil dieser Revolution"
+  },
+  "section2": {
+    "title": {
+      "part1": "Es ist Zeit, die Bildung zu",
+      "highlight": "erneuern",
+      "part2": ""
+    },
+    "subtitle": "KI-Lernkarten, Spiele, die Ihren Geist herausfordern, und eine globale Gemeinschaft neugieriger Innovatoren",
+    "cta": "Jetzt Herunterladen"
+  },
+  "section3": {
+    "title": "Wir lernen voneinander",
+    "subtitle": "Indem wir verstehen, welche Themen Sie mögen, bieten wir Ihnen Kurse an, die Sie interessieren könnten"
+  },
+  "section4": {
+    "title": {
+      "part1": "Ein Tutor, der",
+      "highlight": "wirklich",
+      "part2": "persönlich ist"
+    },
+    "subtitle": "Wir verstehen Ihre Lernmethode und bieten Ihnen Werkzeuge zum Üben Ihrer Kurse"
+  },
+  "section5": {
+    "title": {
+      "highlight1": "Gemeinsam",
+      "part1": "Lernen,",
+      "highlight2": "Gemeinsam",
+      "part2": "Wachsen."
+    },
+    "subtitle": "Wir glauben an den freien Zugang zu Wissen, von Lernenden für Lernende entwickelt"
+  }
+}

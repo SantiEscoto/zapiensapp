@@ -1,0 +1,393 @@
+@font-face {
+  font-family: 'Inter Tight';
+  src: url('/fonts/Inter_Tight/static/InterTight-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inter Tight';
+  src: url('/fonts/Inter_Tight/static/InterTight-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Space Mono';
+  src: url('/fonts/Space_Mono/SpaceMono-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Space Mono';
+  src: url('/fonts/Space_Mono/SpaceMono-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+:root {
+  /* Colores principales */
+  --primary-color: #FF4D4D;
+  --secondary-color: #1e40af;
+  --background-light: #ffffff;
+  --background-dark: #1a1a1a;
+  --text-primary: #333333;
+  --text-primary-dark: #ffffff;
+  --text-secondary: #4b5563;
+  --text-secondary-dark: #d1d5db;
+  
+  /* Colores de acento */
+  --highlight-yellow: #FFD700;
+  --highlight-orange: #FF6B35;
+  --highlight-blue: #4DA6FF;
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  
+  /* Espaciado */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Bordes */
+  --border-radius-sm: 0.25rem;
+  --border-radius-md: 0.375rem;
+  --border-radius-lg: 0.5rem;
+  --border-radius-full: 9999px;
+  
+  /* Transiciones */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+  
+  --font-primary: 'Space Mono', monospace;
+  --font-secondary: 'Courier New', monospace;
+  
+  /* Light theme (default) */
+  --text-primary-light: #333333;
+  --text-primary-dark: #666666;
+  --accent-color: #0070f3;
+  
+  --color-background: #003333;
+  --color-neon-orange: #FF8C00;
+  --color-turquoise: #40E0D0;
+  --color-text: #FFFFFF;
+}
+
+/* Dark theme */
+.dark {
+  --background-light: #1a1a1a;
+  --background-dark: #121212;
+  --text-primary: #ffffff;
+  --text-primary-dark: #e0e0e0;
+  --text-secondary: #d1d5db;
+  --text-secondary-dark: #9ca3af;
+}
+
+/* Reset y estilos base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  color: var(--color-text);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0;
+  padding: 0;
+}
+
+/* Tipografía */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: var(--spacing-md);
+}
+
+h1 {
+  font-size: 3rem;
+  @media (max-width: 768px) {
+    font-size: 2.5rem;
+  }
+}
+
+h2 {
+  font-size: 2.5rem;
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+}
+
+h3 {
+  font-size: 2rem;
+  @media (max-width: 768px) {
+    font-size: 1.75rem;
+  }
+}
+
+p {
+  margin-bottom: var(--spacing-md);
+  color: var(--text-secondary);
+}
+
+/* Enlaces */
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--secondary-color);
+}
+
+/* Botones */
+button {
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+/* Imágenes */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Utilidades */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+/* Accesibilidad */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus visible */
+:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn var(--transition-normal);
+}
+
+[data-theme='light'] {
+  --background: var(--background-light);
+  --text-primary: var(--text-primary-light);
+  --text-secondary: var(--text-secondary-light);
+  --background-hover: var(--background-hover-light);
+}
+
+[data-theme='dark'] {
+  --background: var(--background-dark);
+  --text-primary: var(--text-primary-dark);
+  --text-secondary: var(--text-secondary-dark);
+  --background-hover: var(--background-hover-dark);
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.highlight-yellow {
+  color: var(--highlight-yellow);
+}
+
+.highlight-orange {
+  color: var(--highlight-orange);
+}
+
+.highlight-blue {
+  color: var(--highlight-blue);
+}
+
+.dark-section {
+  background-color: var(--background-dark);
+  color: var(--text-primary-dark);
+}
+
+.light-section {
+  background-color: var(--background-light);
+  color: var(--text-primary-light);
+}
+
+/* Sección específica para "update the education" */
+.education-section {
+  background-color: var(--background-dark);
+  color: var(--text-primary-dark);
+}
+
+.education-section .highlight {
+  color: var(--highlight-yellow);
+}
+
+/* Sección "We learn from each other" */
+.learn-section {
+  background-color: var(--background-light);
+  color: var(--text-primary-light);
+}
+
+/* Sección del tutor personal */
+.tutor-section {
+  background-color: var(--background-light);
+  color: var(--text-primary-light);
+}
+
+.tutor-section .highlight {
+  color: var(--highlight-orange);
+}
+
+/* Sección final con el globo */
+.global-section {
+  background-color: var(--background-dark);
+  color: var(--text-primary-dark);
+}
+
+.global-section .highlight-learn {
+  color: var(--highlight-orange);
+}
+
+.global-section .highlight-grow {
+  color: var(--highlight-blue);
+}
+
+.collage-element {
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.collage-element:hover {
+  transform: scale(1.05);
+}
+
+.highlight-text {
+  background: linear-gradient(120deg, var(--highlight-yellow) 0%, var(--highlight-orange) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-family: var(--font-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.typewriter-text {
+  border-right: 2px solid var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: var(--text-primary) }
+}
+
+.collage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+}
+
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .collage-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.neon-text {
+  color: var(--color-neon-orange);
+  text-shadow: 0 0 10px rgba(255, 140, 0, 0.7),
+               0 0 20px rgba(255, 140, 0, 0.5),
+               0 0 30px rgba(255, 140, 0, 0.3);
+}
+
+.button {
+  background-color: var(--color-neon-orange);
+  color: var(--color-background);
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  box-shadow: 0 0 10px rgba(255, 140, 0, 0.3);
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(255, 140, 0, 0.5);
+}
+
+.button.secondary {
+  background-color: transparent;
+  border: 2px solid var(--color-neon-orange);
+  color: var(--color-neon-orange);
+}

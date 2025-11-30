@@ -1,0 +1,48 @@
+{
+  "nav": {
+    "news": "Notícias",
+    "help": "Ajuda",
+    "faq": "Perguntas Frequentes",
+    "search": "Pesquisar"
+  },
+  "footer": {
+    "home": "Início",
+    "about": "Sobre",
+    "terms": "Termos",
+    "contact": "Contato"
+  },
+  "section1": {
+    "title": "Um aplicativo para aprender tudo",
+    "subtitle": "Junte-se a nós e seja parte desta revolução"
+  },
+  "section2": {
+    "title": {
+      "part1": "É hora de",
+      "highlight": "atualizar",
+      "part2": "a educação"
+    },
+    "subtitle": "Cartões de memória com IA, jogos que desafiam sua mente e uma comunidade global de curiosos inovadores",
+    "cta": "Começar Agora"
+  },
+  "section3": {
+    "title": "Aprendemos uns com os outros",
+    "subtitle": "Entendendo os tópicos que você gosta, oferecemos cursos que podem interessar você"
+  },
+  "section4": {
+    "title": {
+      "part1": "Um tutor que é",
+      "highlight": "realmente",
+      "part2": "pessoal"
+    },
+    "subtitle": "Entendemos seu método de aprendizado e fornecemos ferramentas para você praticar seus cursos"
+  },
+  "section5": {
+    "title": {
+      "highlight1": "Aprenda",
+      "part1": "juntos,",
+      "highlight2": "cresça",
+      "part2": "juntos."
+    },
+    "subtitle": "Acreditamos no acesso livre ao conhecimento, construído por alunos para alunos"
+  }
+} 

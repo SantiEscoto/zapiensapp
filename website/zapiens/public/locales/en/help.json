@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "title": "Help & Tutorials",
+    "description": "Learn how to use Zapiens effectively with our comprehensive guides and tutorials."
+  },
+  "title": "Help & Tutorials",
+  "common": {
+    "learnMore": "Learn More"
+  },
+  "gettingStarted": {
+    "title": "Getting Started",
+    "step1": {
+      "title": "Create Your Account",
+      "description": "Sign up for a Zapiens account to access all features and start your learning journey.",
+      "link": "/help/account-setup"
+    },
+    "step2": {
+      "title": "Create Your First Deck",
+      "description": "Learn how to create and organize your study materials with our intuitive flashcard system.",
+      "link": "/help/create-deck"
+    },
+    "step3": {
+      "title": "Start Learning",
+      "description": "Discover different study modes and games to make your learning experience more engaging.",
+      "link": "/help/study-modes"
+    }
+  },
+  "features": {
+    "title": "Features Guide",
+    "feature1": {
+      "title": "AI-Powered Learning",
+      "description": "Understand how our AI technology adapts to your learning style and helps you study more effectively.",
+      "link": "/help/ai-features"
+    },
+    "feature2": {
+      "title": "Study Games",
+      "description": "Explore our collection of educational games designed to make learning fun and interactive.",
+      "link": "/help/study-games"
+    },
+    "feature3": {
+      "title": "Community Features",
+      "description": "Learn how to connect with other learners and share your study materials.",
+      "link": "/help/community"
+    }
+  },
+  "support": {
+    "title": "Need Help?",
+    "option1": {
+      "title": "Contact Support",
+      "description": "Get in touch with our support team for personalized assistance.",
+      "link": "/help/contact"
+    },
+    "option2": {
+      "title": "FAQ",
+      "description": "Find answers to frequently asked questions about Zapiens.",
+      "link": "/faq"
+    }
+  }
+} 

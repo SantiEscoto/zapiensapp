@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "title": "Terms and Conditions",
+    "description": "Read our terms and conditions to understand your rights and responsibilities when using Zapiens."
+  },
+  "title": "Terms and Conditions",
+  "sections": {
+    "introduction": {
+      "title": "Introduction",
+      "content": "Welcome to Zapiens. By accessing or using our platform, you agree to be bound by these Terms and Conditions. Please read them carefully before proceeding."
+    },
+    "definitions": {
+      "title": "Definitions",
+      "content": "In these Terms and Conditions, the following terms shall have the following meanings:",
+      "item1": "\"Platform\" refers to the Zapiens website, mobile applications, and all related services.",
+      "item2": "\"User\" refers to any individual or entity that accesses or uses the Platform.",
+      "item3": "\"Content\" refers to all materials, including but not limited to text, images, and data available on the Platform."
+    },
+    "usage": {
+      "title": "Usage Terms",
+      "content": "By using Zapiens, you agree to:",
+      "item1": "Provide accurate and complete information when creating an account.",
+      "item2": "Maintain the security of your account and not share your credentials.",
+      "item3": "Use the Platform in compliance with all applicable laws and regulations."
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "content": "Your privacy is important to us. We collect and process your personal data in accordance with our Privacy Policy. By using Zapiens, you consent to such processing."
+    },
+    "contact": {
+      "title": "Contact Information",
+      "content": "If you have any questions about these Terms and Conditions, please contact us at support@zapiens.com."
+    }
+  }
+} 

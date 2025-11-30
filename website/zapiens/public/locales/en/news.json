@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "title": "News & Updates",
+    "description": "Stay up to date with the latest news and updates from Zapiens."
+  },
+  "title": "News & Updates",
+  "items": {
+    "item1": {
+      "title": "New AI Features Released",
+      "excerpt": "We're excited to announce the release of our new AI-powered study features, making learning even more personalized and effective."
+    },
+    "item2": {
+      "title": "Community Milestone",
+      "excerpt": "Our learning community has reached 100,000 active users! Join us in celebrating this achievement and continue growing together."
+    },
+    "item3": {
+      "title": "New Study Games",
+      "excerpt": "Introducing our latest collection of educational games designed to make learning more engaging and fun."
+    }
+  }
+} 

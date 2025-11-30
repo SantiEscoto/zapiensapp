@@ -1,0 +1,28 @@
+{
+  "meta": {
+    "title": "Search",
+    "description": "Search through our comprehensive collection of study materials and resources."
+  },
+  "title": "Search",
+  "searchPlaceholder": "Search for study materials, topics, or resources...",
+  "results": {
+    "item1": {
+      "title": "AI-Powered Study Techniques",
+      "description": "Learn how to leverage artificial intelligence to enhance your study sessions and improve retention.",
+      "category": "Study Tips",
+      "date": "March 25, 2024"
+    },
+    "item2": {
+      "title": "Creating Effective Flashcards",
+      "description": "Master the art of creating and using flashcards for optimal learning and memory retention.",
+      "category": "Tutorial",
+      "date": "March 23, 2024"
+    },
+    "item3": {
+      "title": "Study Group Best Practices",
+      "description": "Discover how to form and maintain effective study groups for collaborative learning.",
+      "category": "Community",
+      "date": "March 20, 2024"
+    }
+  }
+} 

@@ -1,0 +1,48 @@
+{
+  "nav": {
+    "news": "뉴스",
+    "help": "도움말",
+    "faq": "자주 묻는 질문",
+    "search": "검색"
+  },
+  "footer": {
+    "home": "홈",
+    "about": "소개",
+    "terms": "이용약관",
+    "contact": "문의하기"
+  },
+  "section1": {
+    "title": "모든 것을 배우는 하나의 앱",
+    "subtitle": "우리와 함께 혁신에 참여하세요"
+  },
+  "section2": {
+    "title": {
+      "part1": "교육을",
+      "highlight": "업데이트",
+      "part2": "할 때입니다"
+    },
+    "subtitle": "AI 플래시카드, 마음을 도전하는 게임, 그리고 호기심 많은 글로벌 커뮤니티",
+    "cta": "지금 시작하기"
+  },
+  "section3": {
+    "title": "서로에게서 배웁니다",
+    "subtitle": "당신이 좋아하는 주제를 이해하여 관심 있을 만한 코스를 제공합니다"
+  },
+  "section4": {
+    "title": {
+      "part1": "정말",
+      "highlight": "개인화된",
+      "part2": "튜터"
+    },
+    "subtitle": "당신의 학습 방법을 이해하고 코스를 연습할 수 있는 도구를 제공합니다"
+  },
+  "section5": {
+    "title": {
+      "highlight1": "함께",
+      "part1": "배우고,",
+      "highlight2": "함께",
+      "part2": "성장하세요."
+    },
+    "subtitle": "학습자에 의한, 학습자를 위한 무료 지식 접근을 믿습니다"
+  }
+} 

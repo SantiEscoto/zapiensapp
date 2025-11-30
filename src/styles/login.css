@@ -1,0 +1,45 @@
+.login-form-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.login-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #1a1f23;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.login-table td {
+  padding: 0;
+}
+
+.login-table input {
+  width: 100%;
+  padding: 16px;
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+}
+
+.login-table input:first-child {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.login-table input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.login-table input:focus {
+  outline: none;
+}
+
+.login-table td:focus-within {
+  border: 2px solid #1CB0F6;
+  border-radius: 8px;
+}

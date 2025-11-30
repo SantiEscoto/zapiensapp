@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "Zapiens - Aprende y crece con tu tutor personal",
+    "description": "Zapiens es una plataforma educativa que conecta estudiantes con tutores expertos para un aprendizaje personalizado y efectivo."
+  },
+  "nav": {
+    "news": "Noticias",
+    "help": "Ayuda",
+    "faq": "Preguntas Frecuentes",
+    "search": "Buscar"
+  },
+  "footer": {
+    "home": "Inicio",
+    "about": "Acerca de",
+    "terms": "Términos",
+    "contact": "Contacto"
+  },
+  "section1": {
+    "title": "Aprende de la mano de expertos",
+    "subtitle": "Conecta con tutores especializados y alcanza tus objetivos educativos"
+  },
+  "section2": {
+    "title": {
+      "part1": "Actualiza tu",
+      "highlight": "educación",
+      "part2": "con Zapiens"
+    },
+    "subtitle": "Accede a contenido de calidad y aprende a tu propio ritmo",
+    "cta": "Comenzar ahora"
+  },
+  "section3": {
+    "title": "Aprende de manera efectiva",
+    "subtitle": "Métodos de enseñanza personalizados para maximizar tu aprendizaje"
+  },
+  "section4": {
+    "title": {
+      "part1": "Tu",
+      "highlight": "tutor personal",
+      "part2": "te espera"
+    },
+    "subtitle": "Recibe atención individualizada y resuelve todas tus dudas"
+  },
+  "section5": {
+    "title": {
+      "highlight1": "Aprende",
+      "part1": "con los mejores y",
+      "highlight2": "crece",
+      "part2": "profesionalmente"
+    },
+    "subtitle": "Únete a nuestra comunidad global de estudiantes y tutores"
+  }
+}

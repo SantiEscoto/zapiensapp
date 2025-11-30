@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "scheme": "acme",
+    "plugins": [
+      "expo-router",
+      "expo-font"
+    ],
+    "name": "ZapCards",
+    "slug": "ZapCards",
+    "fonts": {
+      "DINNextRoundedLTPro-Bold": "./assets/fonts/DINNextRoundedLTPro-Bold.otf",
+      "DINNextRoundedLTPro-Regular": "./assets/fonts/DINNextRoundedLTPro-Regular.otf"
+    }
+  }
+}

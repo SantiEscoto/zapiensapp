@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "title": "Frequently Asked Questions",
+    "description": "Find answers to common questions about Zapiens and our educational platform."
+  },
+  "title": "Frequently Asked Questions",
+  "general": {
+    "question1": "What is Zapiens?",
+    "answer1": "Zapiens is an innovative educational platform that combines AI-powered flashcards with interactive learning games to make studying more engaging and effective.",
+    "question2": "How does Zapiens work?",
+    "answer2": "Our platform uses advanced AI algorithms to create personalized study materials and adapt to your learning style. You can create, share, and study flashcards while playing educational games that reinforce your knowledge.",
+    "question3": "Is Zapiens free to use?",
+    "answer3": "We offer both free and premium features. The basic version includes essential study tools, while our premium version provides advanced features and unlimited access to all content."
+  },
+  "features": {
+    "question1": "What makes Zapiens different from other study apps?",
+    "answer1": "Zapiens combines AI technology with gamification to create a unique learning experience. Our platform adapts to your learning style and provides personalized study materials.",
+    "question2": "Can I create my own study materials?",
+    "answer2": "Yes! You can create custom flashcards, study sets, and even share them with other students. Our platform supports various content types including text, images, and audio."
+  },
+  "contact": {
+    "question1": "How can I get help or support?",
+    "answer1": "We offer multiple support channels including email support, in-app chat, and a comprehensive help center. You can also join our community forum to connect with other users."
+  }
+} 
