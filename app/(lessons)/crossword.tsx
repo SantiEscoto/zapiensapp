@@ -765,7 +765,7 @@ const CrosswordScreen: React.FC = () => {
           params: { id }
         })}
       >
-        <AntDesign name="arrowleft" size={24} color="#FFFFFF" />
+        <AntDesign name="arrow-left" size={24} color="#FFFFFF" />
       </TouchableOpacity>
       
       {showResults ? (

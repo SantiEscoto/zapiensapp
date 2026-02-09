@@ -1,8 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createTheme } from '../services/theme';
-import { useColorScheme } from 'react-native';
-import { useFocusEffect } from 'expo-router';
 
 type ThemeType = 'light' | 'dark';
 type ColorTheme = 'default' | 'green' | 'purple' | 'orange';

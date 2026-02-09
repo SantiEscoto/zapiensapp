@@ -1,8 +1,9 @@
 const { createClient } = require('@supabase/supabase-js');
 
 // Initialize Supabase client
-const supabaseUrl = 'https://ikpjwmjmtuvedgzhtane.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrcGp3bWptdHV2ZWRnemh0YW5lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAxNzcxMTMsImV4cCI6MjA1NTc1MzExM30.A7BA2h9OJXNrNocc_7T_O2ZIRfUCvVro5rlVEgQXXLg';
+// TODO: Update with your new Supabase publishable key
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://iatnvrxdlpwxvsbnheqp.supabase.co';
+const supabaseKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'TU_PUBLISHABLE_KEY_AQUI';
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 

@@ -58,7 +58,7 @@ export default function SpinningScreen() {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
   const spinValue = useRef(new Animated.Value(0)).current;
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const [loaded] = useFonts({
     [FONTS.bold]: require('../../assets/fonts/DINNextRoundedLTPro-Bold.otf'),

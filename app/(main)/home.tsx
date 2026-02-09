@@ -322,9 +322,15 @@ const CollectionScreen = memo(({
     };
   }, [collections]);
 
-  // Memoize navigation handler
-  const handleNavigation = useCallback((path: string, params?: any) => {
-    router.push({ pathname: path as any, params });
+  // Rutas en web: sin grupo para URL limpia (/lessons?id=, /lands?id=)
+  const ROUTES = { lessons: '/lessons', lands: '/lands', edit: '/(subtabs)/edit', manage: '/(subtabs)/manage' } as const;
+  const handleNavigation = useCallback((path: string, params?: Record<string, string>) => {
+    if (params?.id != null) {
+      const base = path.includes('lessons') ? ROUTES.lessons : path.includes('lands') ? ROUTES.lands : path;
+      router.push(`${base}?id=${encodeURIComponent(params.id)}` as any);
+    } else {
+      router.push({ pathname: path as any, params });
+    }
   }, [router]);
 
   // Memoize folder rendering
@@ -333,7 +339,7 @@ const CollectionScreen = memo(({
       key={folder.id}
       collection_ids={folder.collection_ids}
       name={folder.name}
-      onPress={() => handleNavigation('/(subtabs)/lands', { id: folder.id })}
+      onPress={() => handleNavigation(ROUTES.lands, { id: folder.id })}
     />
   ), [handleNavigation]);
 
@@ -342,11 +348,7 @@ const CollectionScreen = memo(({
     <CollectionCard 
       key={collection.id}
       collection={collection}
-      onPress={() => handleNavigation('/(subtabs)/lessons', {
-        id: collection.id,
-        name: collection.name,
-        topics: collection.topics
-      })}
+      onPress={() => handleNavigation(ROUTES.lessons, { id: collection.id })}
     />
   ), [handleNavigation]);
 
@@ -641,11 +643,7 @@ const CollectionScreen = memo(({
                 }]}
                 onPress={() => {
                   handleAllCollectionsClose();
-                  handleNavigation('/(subtabs)/lessons', {
-                    id: collection.id,
-                    name: collection.name,
-                    topics: collection.topics
-                  });
+                  handleNavigation(ROUTES.lessons, { id: collection.id });
                 }}
               >
                 <View style={styles.collectionListItemContent}>
@@ -877,21 +875,12 @@ const SearchScreen = () => {
     searchCollections(topic);
   }, [searchCollections]);
 
-  // Memoize collection card rendering function
+  // Memoize collection card rendering function (href con ?id= para web)
   const renderCollectionCard = useCallback((collection: Collection) => (
     <CollectionCard 
       key={collection.id}
       collection={collection}
-      onPress={() => {
-        router.push({
-          pathname: '/(subtabs)/lessons',
-          params: {
-            id: collection.id,
-            name: collection.name,
-            topics: collection.topics
-          }
-        });
-      }}
+      onPress={() => router.push(`/lessons?id=${encodeURIComponent(collection.id)}` as any)}
     />
   ), [router]);
 
@@ -923,10 +912,7 @@ const SearchScreen = () => {
               collection_ids={folder.collection_ids}
               key={folder.id}
               name={folder.name}
-              onPress={() => router.push({
-                pathname: '/(subtabs)/lands',
-                params: { id: folder.id }
-              })}
+              onPress={() => router.push(`/lands?id=${encodeURIComponent(folder.id)}` as any)}
             />
           ))}
         </View>
@@ -1014,10 +1000,7 @@ const SearchScreen = () => {
                       collection_ids={folder.collection_ids}
                       key={folder.id}
                       name={folder.name}
-                      onPress={() => router.push({
-                        pathname: '/(subtabs)/lands',
-                        params: { id: folder.id }
-                      })}
+                      onPress={() => router.push(`/lands?id=${encodeURIComponent(folder.id)}` as any)}
                     />
                   ))}
                 </View>

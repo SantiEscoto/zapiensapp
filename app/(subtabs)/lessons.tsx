@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Animated, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Animated, Dimensions, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '../../src/services/supabase';
 import { useFonts } from 'expo-font';
@@ -14,10 +14,11 @@ type TabType = 'play' | 'cards';
 interface Collection {
   id: string;
   name: string;
-  language: string;
+  topics: string[];
   created_at: string;
   terms_count?: number;
   is_public?: boolean;
+  cover_url?: string;
 }
 
 interface Flashcard {
@@ -46,7 +47,14 @@ export default function LessonsScreen() {
   const { width } = useWindowDimensions();
   const TAB_WIDTH = width / 2;
   const router = useRouter();
-  const { id, refresh } = useLocalSearchParams();
+  const params = useLocalSearchParams();
+  const idFromParams = typeof params.id === 'string' ? params.id : Array.isArray(params.id) ? params.id[0] : undefined;
+  // En web: fallback leyendo ?id= de la URL (por si en producción el router no pasa params)
+  const idFromUrl = Platform.OS === 'web' && typeof window !== 'undefined'
+    ? (new URLSearchParams(window.location.search).get('id') ?? undefined)
+    : undefined;
+  const id = idFromParams ?? idFromUrl;
+  const refresh = params.refresh;
   const { theme } = useTheme();
   const { updateCollection } = useCollections();
   const [collection, setCollection] = useState<Collection | null>(null);
@@ -68,7 +76,11 @@ export default function LessonsScreen() {
     }), [slideAnimation, TAB_WIDTH]);
 
   const fetchCollection = useCallback(async () => {
-    if (!id) return;
+    if (!id) {
+      setError('Falta el ID de la colección.');
+      setLoading(false);
+      return;
+    }
     
     try {
       setLoading(true);
@@ -140,8 +152,10 @@ export default function LessonsScreen() {
 
   const handleClose = useCallback(async () => {
     if (collection) {
-      // Actualizar el contexto global con la colección actual
-      updateCollection(collection);
+      updateCollection({
+        ...collection,
+        topics: collection.topics ?? [],
+      });
     }
     // Navegar directamente a home
     router.replace('/(main)/home');
@@ -151,6 +165,21 @@ export default function LessonsScreen() {
     return (
       <View style={styles.loadingContainer}>
         <Text style={styles.loadingText}>Loading collection...</Text>
+      </View>
+    );
+  }
+
+  if (error || (!collection && !loading)) {
+    return (
+      <View style={[styles.loadingContainer, styles.errorContainer]}>
+        <Text style={styles.errorTitle}>No se pudo cargar la colección</Text>
+        <Text style={styles.errorText}>{error || 'Colección no encontrada o sin acceso.'}</Text>
+        <TouchableOpacity style={styles.retryButton} onPress={() => { setError(null); fetchCollection(); }}>
+          <Text style={styles.retryButtonText}>Reintentar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Text style={styles.backButtonText}>Volver</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -166,7 +195,7 @@ export default function LessonsScreen() {
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.editButton}
-          onPress={() => router.push({ pathname: '/edit', params: { id } })}
+          onPress={() => router.push(`/(subtabs)/edit?id=${encodeURIComponent(id ?? '')}` as any)}
         >
           <Text style={styles.editButtonText}>Edit</Text>
         </TouchableOpacity>
@@ -236,6 +265,13 @@ const styles = StyleSheet.create({
   screenContainer: { flex: 1 },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#131f24' },
   loadingText: { color: '#FFFFFF', fontSize: 18, fontFamily: FONTS.bold },
+  errorContainer: { padding: 24 },
+  errorTitle: { color: '#FFFFFF', fontSize: 20, fontFamily: FONTS.bold, marginBottom: 12, textAlign: 'center' },
+  errorText: { color: '#8E8E93', fontSize: 16, textAlign: 'center', marginBottom: 20 },
+  retryButton: { backgroundColor: '#1CB0F6', paddingVertical: 14, paddingHorizontal: 28, borderRadius: 12, alignSelf: 'center', marginBottom: 12 },
+  retryButtonText: { color: '#FFFFFF', fontSize: 16, fontFamily: FONTS.bold },
+  backButton: { alignSelf: 'center', paddingVertical: 10 },
+  backButtonText: { color: '#8E8E93', fontSize: 16 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 60, paddingBottom: 20 },
   editButton: { padding: 10, backgroundColor: '#1CB0F6', borderRadius: 8 },
   editButtonText: { color: '#FFFFFF', fontSize: 16, fontFamily: FONTS.bold },

@@ -40,7 +40,17 @@ En build, Expo inyecta las `EXPO_PUBLIC_*` en el bundle; sin ellas, auth y API f
 - **Deploy** desde el panel, o push a la rama conectada (ej. `main`).
 - La URL de producción será algo como `https://zapcards-xxx.vercel.app`.
 
-### 2.4 Dominio propio (opcional)
+### 2.4 Configurar Supabase para la URL de producción
+
+Para que el login (email y OAuth) funcione en la app desplegada:
+
+1. Entra en [Supabase](https://supabase.com) → tu proyecto → **Authentication** → **URL Configuration**.
+2. En **Redirect URLs** añade (sustituye por tu dominio si usas uno propio):
+   - `https://zapcards-rosy.vercel.app/**`
+   - `https://zapcards-rosy.vercel.app/auth/callback`
+3. (Opcional) Si quieres que al abrir la app vaya directo a producción, pon **Site URL** = `https://zapcards-rosy.vercel.app`.
+
+### 2.5 Dominio propio (opcional)
 
 1. **Project → Settings → Domains** → añade `app.tudominio.com`.
 2. Configura en tu DNS el CNAME que indique Vercel.
@@ -52,14 +62,17 @@ En build, Expo inyecta las `EXPO_PUBLIC_*` en el bundle; sin ellas, auth y API f
 
 ## 3. Probar el build en local
 
+Para que **rutas directas** (ej. `/rankings`, `/profile`) funcionen igual que en producción, hay que servir con **fallback SPA** (todas las rutas devuelven `index.html`):
+
 ```bash
 cd ZapCard
 nvm use 20   # o asegúrate de usar Node 20
 npm run build:web
-npx serve dist
+npm run serve:web
 ```
 
-Abre `http://localhost:3000` (o el puerto que indique `serve`). La app cargará; el login redirigirá a Supabase y de vuelta a la misma URL (en local será `http://localhost:3000/auth/callback`; en producción será tu dominio).
+`serve:web` usa `serve dist -l 3000 -s` (`-s` = rewrite de rutas no encontradas a `index.html`).  
+Abre `http://localhost:3000` o `http://localhost:3000/rankings`. Sin `-s`, abrir directamente `/rankings` daría HTTP 404.
 
 ---
 

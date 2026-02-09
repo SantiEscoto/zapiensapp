@@ -2,7 +2,6 @@ import React, { useReducer, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, ImageSourcePropType } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import { supabase } from '../../src/services/supabase';
-import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { useTheme } from '../../src/context/ThemeContext';
 
 interface UserRanking {
@@ -20,8 +19,18 @@ interface Profile {
   full_name: string | null;
   avatar_url: string | null;
   weekly_xp: number | null;
-  following_ids: string[] | null;
-  email: string | null;
+  following_ids?: string[] | null;
+  email?: string | null;
+}
+
+/** Fila de la vista rankings_weekly (backend MVP) */
+interface RankingRow {
+  id: string;
+  username: string | null;
+  full_name: string | null;
+  avatar_url: string | null;
+  weekly_xp: number;
+  followers_count: number;
 }
 
 // State interface
@@ -29,6 +38,7 @@ interface RankingsState {
   rankings: UserRanking[];
   userRank: UserRanking | null;
   loading: boolean;
+  error: string | null;
   activeTab: 'general' | 'teams';
   currentUserId: string | null;
   lastUpdated: number;
@@ -37,6 +47,7 @@ interface RankingsState {
 // Action types
 type RankingsAction = 
   | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'SET_USER_ID'; payload: string }
   | { type: 'SET_INITIAL_DATA'; payload: { rankings: UserRanking[]; userRank: UserRanking | null } }
   | { type: 'UPDATE_PROFILE'; payload: { profileId: string; score: number } }
@@ -47,6 +58,9 @@ function rankingsReducer(state: RankingsState, action: RankingsAction): Rankings
   switch (action.type) {
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
+    
+    case 'SET_ERROR':
+      return { ...state, error: action.payload };
     
     case 'SET_USER_ID':
       return { ...state, currentUserId: action.payload };
@@ -103,6 +117,7 @@ const initialState: RankingsState = {
   rankings: [],
   userRank: null,
   loading: true,
+  error: null,
   activeTab: 'general',
   currentUserId: null,
   lastUpdated: 0
@@ -110,27 +125,8 @@ const initialState: RankingsState = {
 
 export default function RankingsScreen() {
   const [state, dispatch] = useReducer(rankingsReducer, initialState);
-  const { rankings, userRank, loading, activeTab, currentUserId } = state;
+  const { rankings, userRank, loading, error, activeTab, currentUserId } = state;
   const { theme } = useTheme();
-
-  // Handle profile updates from real-time subscription
-  const handleProfileUpdate = useCallback((payload: RealtimePostgresChangesPayload<any>) => {
-    const typedPayload = payload as unknown as { 
-      new: Profile; 
-      old: Profile;
-    };
-    
-    // Only update if weekly_xp changed
-    if (typedPayload.new?.weekly_xp !== typedPayload.old?.weekly_xp) {
-      dispatch({
-        type: 'UPDATE_PROFILE',
-        payload: {
-          profileId: typedPayload.new.id,
-          score: Number(typedPayload.new.weekly_xp) || 0
-        }
-      });
-    }
-  }, []);
 
   // Get country code from email domain
   const getCountryCodeFromEmail = useCallback((email: string | null): string | null => {
@@ -147,100 +143,90 @@ export default function RankingsScreen() {
     return null;
   }, []);
 
-  // Convert profile data to ranking format
-  const profileToRanking = useCallback((profile: Profile, index: number): UserRanking => {
+  // Mapear fila de la vista rankings_weekly a UserRanking (backend MVP)
+  const rowToRanking = useCallback((row: RankingRow, index: number): UserRanking => {
+    const displayName = (row.full_name?.trim() || row.username?.trim() || '').trim();
     return {
-      user_id: profile.id,
-      username: profile.full_name || profile.username,
-      score: profile.weekly_xp || 0,
+      user_id: row.id,
+      username: displayName || 'Usuario',
+      score: row.weekly_xp,
       rank: index + 1,
-      avatar_url: profile.avatar_url || undefined,
-      country_code: getCountryCodeFromEmail(profile.email)
+      avatar_url: row.avatar_url || undefined,
+      country_code: null
     };
-  }, [getCountryCodeFromEmail]);
+  }, []);
 
-  // Initial fetch of rankings
+  // Initial fetch: usa vista rankings_weekly (backend MVP)
   const fetchInitialRankings = useCallback(async () => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
-      
-      // Get current user
+
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
-
       if (!user) {
-        console.error('User not authenticated');
         dispatch({ type: 'SET_LOADING', payload: false });
         return;
       }
 
-      // Store user ID for later use
       dispatch({ type: 'SET_USER_ID', payload: user.id });
 
-      // Fetch profiles ordered by weekly_xp
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, username, full_name, avatar_url, weekly_xp, following_ids, email')
+      const { data: rows, error } = await supabase
+        .from('rankings_weekly')
+        .select('id, username, full_name, avatar_url, weekly_xp, followers_count')
         .order('weekly_xp', { ascending: false })
         .limit(100);
-        
-      if (profilesError) throw profilesError;
-      
-      if (!profilesData) {
+
+      if (error) throw error;
+      if (!rows?.length) {
+        dispatch({ type: 'SET_INITIAL_DATA', payload: { rankings: [], userRank: null } });
+        dispatch({ type: 'SET_ERROR', payload: null });
         dispatch({ type: 'SET_LOADING', payload: false });
         return;
       }
-      
-      // Transform profiles to rankings
-      const rankingsData = profilesData.map(profileToRanking);
-      
-      // Find current user's rank
+
+      const rankingsData = rows.map((r, i) => rowToRanking(r as RankingRow, i));
       const currentUserRank = rankingsData.find(rank => rank.user_id === user.id) || null;
-      
-      // Update state with initial data
+
+      dispatch({ type: 'SET_ERROR', payload: null });
       dispatch({
         type: 'SET_INITIAL_DATA',
-        payload: {
-          rankings: rankingsData,
-          userRank: currentUserRank
-        }
+        payload: { rankings: rankingsData, userRank: currentUserRank }
       });
-    } catch (error) {
-      console.error('Error fetching rankings:', error instanceof Error ? error.message : String(error));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error('Error fetching rankings:', message);
+      dispatch({ type: 'SET_ERROR', payload: message });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
-  }, [profileToRanking]);
+  }, [rowToRanking]);
 
-  // Optimized fetch for updates - only gets scores
+  // Refetch completo desde la vista (realtime o actualización)
   const fetchRankingUpdates = useCallback(async () => {
     if (!currentUserId) return;
-    
     try {
-      // We only need to fetch the scores, not all profile data
-      const { data: scoresData, error: scoresError } = await supabase
-        .from('profiles')
-        .select('id, weekly_xp')
+      const { data: rows, error } = await supabase
+        .from('rankings_weekly')
+        .select('id, username, full_name, avatar_url, weekly_xp, followers_count')
         .order('weekly_xp', { ascending: false })
         .limit(100);
-      
-      if (scoresError) throw scoresError;
-      if (!scoresData) return;
-      
-      // Update each profile in our state
-      for (const profile of scoresData) {
-        dispatch({
-          type: 'UPDATE_PROFILE',
-          payload: {
-            profileId: profile.id,
-            score: profile.weekly_xp || 0
-          }
-        });
-      }
+      if (error || !rows?.length) return;
+
+      const rankingsData = rows.map((r, i) => rowToRanking(r as RankingRow, i));
+      const currentUserRank = rankingsData.find(rank => rank.user_id === currentUserId) || null;
+      dispatch({
+        type: 'SET_INITIAL_DATA',
+        payload: { rankings: rankingsData, userRank: currentUserRank }
+      });
     } catch (error) {
       console.error('Error updating rankings:', error instanceof Error ? error.message : String(error));
     }
-  }, [currentUserId]);
+  }, [currentUserId, rowToRanking]);
+
+  // Realtime: al cambiar perfiles (p. ej. weekly_xp), refetch desde rankings_weekly (definido después de fetchRankingUpdates)
+  const handleProfileUpdate = useCallback(() => {
+    fetchRankingUpdates();
+  }, [fetchRankingUpdates]);
 
   useEffect(() => {
     // Initial fetch
@@ -302,6 +288,25 @@ export default function RankingsScreen() {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: theme.colors.background }]}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.loadingContainer, { backgroundColor: theme.colors.background }]}>
+        <Text style={[styles.title, { color: theme.colors.text }]}>Leaderboard</Text>
+        <Text style={[styles.errorText, { color: theme.colors.textSecondary }]}>{error}</Text>
+        <TouchableOpacity
+          style={[styles.retryButton, { backgroundColor: theme.colors.primary }]}
+          onPress={() => {
+            dispatch({ type: 'SET_ERROR', payload: null });
+            dispatch({ type: 'SET_LOADING', payload: true });
+            fetchInitialRankings();
+          }}
+        >
+          <Text style={styles.retryButtonText}>Reintentar</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -398,6 +403,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  errorText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginVertical: 16,
+    paddingHorizontal: 24,
+  },
+  retryButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    marginTop: 8,
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   title: {
     fontSize: 24,

@@ -2,6 +2,12 @@
 
 ## Table of Contents
 
+### 0. Checklist y planes
+- [**Checklist del proyecto**](./CHECKLIST.md) - Estado actual, validación, objetivo “app desde tu dominio web” y planes a futuro
+- [**Validación del stack**](./STACK-VALIDATION.md) - Análisis (con fuentes actuales) de si las herramientas son las mejores para prototipo y escalado
+- [**Perspectiva 2026**](./OUTLOOK-2026.md) - Roadmap Expo/Supabase, tendencias IA/PWA/cross-platform y acciones recomendadas para 2026
+- [**Plan Backend MVP**](./BACKEND-MVP-PLAN.md) - Enfoque solo en backend: MVP limpio, validación y escalado por fases (sin tocar frontend)
+
 ### 1. Getting Started
 - [Project Context](./CONTEXT.md) - Overview and technical stack
 - [Contributing Guide](./CONTRIBUTING.md) - How to contribute to the project

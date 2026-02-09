@@ -47,7 +47,7 @@ export default function MatchScreen() {
   const progress = useRef(new Animated.Value(0)).current;
   const totalInitialCards = useRef(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   // Eliminamos cardsToAddNext para agregar parejas de forma inmediata
   const [animatingCards, setAnimatingCards] = useState(new Set<string>());
   const availablePositions = useRef<{[key in 'term' | 'definition']: number[]}>({ term: [], definition: [] });

@@ -19,11 +19,20 @@ export default function FriendsScreen() {
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<User[]>([]);
   const [searchResults, setSearchResults] = useState<User[]>([]);
+  const [followingIds, setFollowingIds] = useState<string[]>([]);
   const [portalVisible, setPortalVisible] = useState(false);
   const [portalMessage, setPortalMessage] = useState('');
   const [loaded] = useFonts(FONT_ASSETS);
 
+  const loadFollowingIds = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data } = await supabase.from('profiles').select('following_ids').eq('id', user.id).single();
+    setFollowingIds(Array.isArray(data?.following_ids) ? data.following_ids : []);
+  };
+
   useEffect(() => {
+    loadFollowingIds();
     fetchSuggestions();
   }, []);
 
@@ -87,39 +96,26 @@ export default function FriendsScreen() {
     }, 3000);
   };
 
-  const handleAddFriend = async (friendId: string) => {
+  const handleToggleFollow = async (targetId: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
-      // Get current user's profile to check if already following
-      const { data: currentProfile } = await supabase
-        .from('profiles')
-        .select('following_ids')
-        .eq('id', user.id)
-        .single();
-
-      if (!currentProfile) throw new Error('Profile not found');
-
-      // Check if already following
-      if (currentProfile.following_ids?.includes(friendId)) {
-        showPortalMessage('Already following this user');
-        return;
+      const isFollowing = followingIds.includes(targetId);
+      if (isFollowing) {
+        const { error } = await supabase.rpc('unfollow_user', { target_id: targetId });
+        if (error) throw error;
+        setFollowingIds(prev => prev.filter(id => id !== targetId));
+        showPortalMessage('Dejaste de seguir');
+      } else {
+        const { error } = await supabase.rpc('follow_user', { target_id: targetId });
+        if (error) throw error;
+        setFollowingIds(prev => [...prev, targetId]);
+        showPortalMessage('Ahora sigues a este usuario');
       }
-
-      // Update following_ids array
-      const newFollowingIds = [...(currentProfile.following_ids || []), friendId];
-      const { error } = await supabase
-        .from('profiles')
-        .update({ following_ids: newFollowingIds })
-        .eq('id', user.id);
-
-      if (error) throw error;
-
-      showPortalMessage('Friend added successfully!');
     } catch (error) {
-      console.error('Error adding friend:', error);
-      showPortalMessage('Failed to add friend. Please try again.');
+      console.error('Error al seguir/dejar de seguir:', error);
+      showPortalMessage('No se pudo completar. Intenta de nuevo.');
     }
   };
 
@@ -127,39 +123,42 @@ export default function FriendsScreen() {
     router.back();
   };
 
-  const renderUserItem = (user: User) => (
-    <View key={user.id} style={styles.userItem}>
-      <View style={styles.userInfo}>
-        <View style={styles.avatarContainer}>
-          {user.avatar_url ? (
-            <Image 
-              source={{ uri: user.avatar_url }} 
-              style={styles.avatar}
-              defaultSource={require('../../assets/user.png')}
-            />
-          ) : (
-            <Image
-              source={require('../../assets/user.png')}
-              style={styles.avatar}
-            />
-          )}
+  const renderUserItem = (user: User) => {
+    const isFollowing = followingIds.includes(user.id);
+    return (
+      <View key={user.id} style={styles.userItem}>
+        <View style={styles.userInfo}>
+          <View style={styles.avatarContainer}>
+            {user.avatar_url ? (
+              <Image 
+                source={{ uri: user.avatar_url }} 
+                style={styles.avatar}
+                defaultSource={require('../../assets/user.png')}
+              />
+            ) : (
+              <Image
+                source={require('../../assets/user.png')}
+                style={styles.avatar}
+              />
+            )}
+          </View>
+          <View style={styles.userTextInfo}>
+            <Text style={styles.userName}>{user.full_name || user.username}</Text>
+            <Text style={styles.userUsername}>@{user.username}</Text>
+          </View>
         </View>
-        <View style={styles.userTextInfo}>
-          <Text style={styles.userName}>{user.full_name || user.username}</Text>
-          <Text style={styles.userUsername}>@{user.username}</Text>
-        </View>
+        <TouchableOpacity 
+          style={[styles.followButton, isFollowing && styles.followButtonFollowing]}
+          onPress={() => handleToggleFollow(user.id)}
+          activeOpacity={0.8}
+        >
+          <Text style={[styles.followButtonText, isFollowing && styles.followButtonTextFollowing]}>
+            {isFollowing ? 'Dejar de seguir' : 'Seguir'}
+          </Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity 
-        style={styles.addButton}
-        onPress={() => handleAddFriend(user.id)}
-      >
-        <Image 
-          source={require('../../assets/icons/add_friend.png')} 
-          style={styles.addIcon} 
-        />
-      </TouchableOpacity>
-    </View>
-  );
+    );
+  };
 
   if (!loaded) {
     return null;
@@ -310,18 +309,26 @@ const styles = StyleSheet.create({
     fontFamily: 'DINNextRoundedLTPro-Regular',
     color: '#8F9EA6',
   },
-  addButton: {
+  followButton: {
     backgroundColor: '#1CB0F6',
-    width: 40,
-    height: 40,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  addIcon: {
-    width: 24,
-    height: 24,
-    tintColor: '#FFFFFF',
+  followButtonFollowing: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#8F9EA6',
+  },
+  followButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'DINNextRoundedLTPro-Bold',
+  },
+  followButtonTextFollowing: {
+    color: '#8F9EA6',
   },
   loadingContainer: {
     flex: 1,

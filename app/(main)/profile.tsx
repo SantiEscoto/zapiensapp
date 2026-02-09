@@ -1,5 +1,5 @@
-import React, { View, Text, Image, StyleSheet, ActivityIndicator, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
-import { useState, useEffect } from 'react';
+import { View, Text, Image, StyleSheet, ActivityIndicator, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
+import React, { useState, useEffect, Fragment } from 'react';
 import { useRouter } from 'expo-router';
 import { Portal, Modal } from 'react-native-paper';
 import { supabase } from '../../src/services/supabase';
@@ -16,8 +16,10 @@ interface Profile {
   full_name?: string;
   avatar_url?: string;
   email: string;
-  followers_ids?: string[];
+  follower_ids?: string[];
   following_ids?: string[];
+  /** Para compatibilidad con la UI que usa followers_ids */
+  followers_ids?: string[];
   weekly_xp?: number;
 }
 
@@ -67,59 +69,22 @@ export default function Perfil() {
       setIsLoading(true);
       if (!session?.user) throw new Error('No user on the session!');
   
-      // First query the basic profile data
+      // Una sola consulta: backend MVP mantiene follower_ids y following_ids en el perfil
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, username, full_name, avatar_url, email, weekly_xp, daily_xp_history')
+        .select('id, username, full_name, avatar_url, email, weekly_xp, daily_xp_history, follower_ids, following_ids')
         .eq('id', session.user.id)
         .single();
-  
+
       if (error) throw error;
-      
-      // Then get followers/following in separate queries (optional)
-      let followers_ids: string[] = [];
-      let following_ids: string[] = [];
-      
-      try {
-        // Get followers count using array containment operator
-        const { count: followersCount } = await supabase
-          .from('profiles')
-          .select('*', { count: 'exact', head: true })
-          .contains('following_ids', [session.user.id]);
 
-        // Get following from array column
-        const { data: followingData } = await supabase
-          .from('profiles')
-          .select('following_ids')
-          .eq('id', session.user.id)
-          .single();
-
-        const { data: followersData } = await supabase
-          .from('profiles')
-          .select('id')
-          .contains('following_ids', [session.user.id]);
-
-        followers_ids = followersData?.map(user => user.id) || [];
-        if (followersData) {
-          followers_ids = followersData.map(user => user.id);
-        }
-
-        if (followingData?.following_ids) {
-          following_ids = Array.isArray(followingData.following_ids)
-            ? followingData.following_ids
-            : [];
-        }
-      } catch (e) {
-        // Silently handle errors for follower data
-        console.warn('Could not fetch follower data:', e);
-      }
-      
-      // Set the complete profile
       if (data) {
+        const followerIds = Array.isArray(data.follower_ids) ? data.follower_ids : [];
+        const followingIds = Array.isArray(data.following_ids) ? data.following_ids : [];
         setProfile({
           ...data,
-          followers_ids,
-          following_ids
+          followers_ids: followerIds,
+          following_ids: followingIds
         });
         
         // Update weekly XP
@@ -259,7 +224,9 @@ export default function Perfil() {
               <View style={styles.chartContainer}>
                 <View style={styles.yAxisLabels}>
                   {getYAxisValues(maxXP).map((value, index) => (
-                    <Text key={index} style={[styles.yAxisLabel, { color: theme.colors.textSecondary }]}>{value}</Text>
+                    <Fragment key={index}>
+                      <Text style={[styles.yAxisLabel, { color: theme.colors.textSecondary }]}>{value}</Text>
+                    </Fragment>
                   ))}
                 </View>
                 <View style={styles.chartContent}>
@@ -296,8 +263,8 @@ export default function Perfil() {
                           const y = chartHeight - (Math.min((value / maxXP) * (chartHeight - 30), chartHeight - 30)) - 6;
                           
                           return (
+                            <Fragment key={index}>
                             <View 
-                              key={index} 
                               style={[
                                 styles.dataPointContainer,
                                 { 
@@ -319,6 +286,7 @@ export default function Perfil() {
                                 {['L', 'M', 'M', 'J', 'V', 'S', 'D'][index]}
                               </Text>
                             </View>
+                            </Fragment>
                           );
                         })}
                       </>
@@ -350,30 +318,32 @@ export default function Perfil() {
       </ScrollView>
     </View>
     <Portal>
-      <Modal
-        visible={logoutConfirmVisible}
-        onDismiss={() => setLogoutConfirmVisible(false)}
-        contentContainerStyle={[styles.modalContainer, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}
-      >
-        <View style={styles.modalContent}>
-          <Text style={[styles.modalTitle, { color: theme.colors.text }]}>Confirmar</Text>
-          <Text style={[styles.modalMessage, { color: theme.colors.text }]}>¿Estás seguro que deseas cerrar sesión?</Text>
-          <View style={styles.modalButtonsRow}>
-            <TouchableOpacity 
-              style={[styles.modalButton, styles.cancelButton, { backgroundColor: theme.colors.border }]}
-              onPress={() => setLogoutConfirmVisible(false)}
-            >
-              <Text style={styles.modalButtonText}>Cancelar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.modalButton, styles.confirmButton, { backgroundColor: theme.colors.primary }]}
-              onPress={handleLogout}
-            >
-              <Text style={styles.modalButtonText}>Confirmar</Text>
-            </TouchableOpacity>
+      <>
+        <Modal
+          visible={logoutConfirmVisible}
+          onDismiss={() => setLogoutConfirmVisible(false)}
+          contentContainerStyle={[styles.modalContainer, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}
+        >
+          <View style={styles.modalContent}>
+            <Text style={[styles.modalTitle, { color: theme.colors.text }]}>Confirmar</Text>
+            <Text style={[styles.modalMessage, { color: theme.colors.text }]}>¿Estás seguro que deseas cerrar sesión?</Text>
+            <View style={styles.modalButtonsRow}>
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.cancelButton, { backgroundColor: theme.colors.border }]}
+                onPress={() => setLogoutConfirmVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.confirmButton, { backgroundColor: theme.colors.primary }]}
+                onPress={handleLogout}
+              >
+                <Text style={styles.modalButtonText}>Confirmar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      </>
     </Portal>
     </>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Image, useWindowDimensions, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Image, useWindowDimensions, Alert, Platform } from 'react-native';
 import { Text, ActivityIndicator, IconButton, Portal, Modal, TextInput, Switch, Button, Checkbox } from 'react-native-paper';
 import { supabase } from '../../src/services/supabase';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -33,7 +33,12 @@ export default function LandsScreen() {
   const [isPublic, setIsPublic] = useState(false);
   const [folderDescription, setFolderDescription] = useState<string | null>(null);
   const { height } = useWindowDimensions();
-  const { id } = useLocalSearchParams();
+  const params = useLocalSearchParams();
+  const idFromParams = typeof params.id === 'string' ? params.id : Array.isArray(params.id) ? params.id[0] : undefined;
+  const idFromUrl = Platform.OS === 'web' && typeof window !== 'undefined'
+    ? (new URLSearchParams(window.location.search).get('id') ?? undefined)
+    : undefined;
+  const id = idFromParams ?? idFromUrl;
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -131,7 +136,7 @@ export default function LandsScreen() {
   };
 
   const navigateToLesson = (collectionId: string) => {
-    router.push({ pathname: '/(subtabs)/lessons', params: { id: collectionId } });
+    router.push(`/lessons?id=${encodeURIComponent(collectionId)}` as any);
   };
 
   const goBack = () => {

@@ -27,7 +27,7 @@ const WordSearch: React.FC = () => {
         params: { id }
       })}
     >
-      <AntDesign name="arrowleft" size={24} color="#FFFFFF" />
+      <AntDesign name="arrow-left" size={24} color="#FFFFFF" />
     </TouchableOpacity>
   );
 
@@ -70,7 +70,7 @@ const WordSearch: React.FC = () => {
   // New state variables for visual feedback
   const [currentSelection, setCurrentSelection] = useState<Set<string>>(new Set());
   const [incorrectSelection, setIncorrectSelection] = useState<boolean>(false);
-  const incorrectAnimTimeout = useRef<NodeJS.Timeout | null>(null);
+  const incorrectAnimTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const directions = [
     [0, 1],   // right

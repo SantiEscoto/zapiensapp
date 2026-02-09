@@ -1,12 +1,46 @@
-import { Tabs } from "expo-router";  // Import Tabs component from expo-router for tab-based navigation
-import { View, StyleSheet, Image } from "react-native";  // Add Image to imports
-import { Ionicons } from '@expo/vector-icons';  // Add this import for icons
+import { Tabs, useRouter } from "expo-router";
+import { View, StyleSheet, Image, ActivityIndicator } from "react-native";
+import { useEffect, useState } from "react";
 import { useTheme } from '../../src/context/ThemeContext';
+import { CollectionsProvider } from '../../src/context/CollectionsContext';
+import { supabase } from '../../src/services/supabase';
 
 export default function MainLayout() {
   const { theme } = useTheme();
+  const router = useRouter();
+  const [hasSession, setHasSession] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setHasSession(!!session);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (hasSession === null) return;
+    if (!hasSession) {
+      router.replace('/(auth)/welcome');
+    }
+  }, [hasSession, router]);
+
+  if (hasSession === null) {
+    return (
+      <View style={[styles.centered, { backgroundColor: theme.colors.background }]}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
+  }
+
+  if (!hasSession) {
+    return (
+      <View style={[styles.centered, { backgroundColor: theme.colors.background }]}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
+  }
 
   return (
+    <CollectionsProvider>
     <Tabs screenOptions={{
       // Color settings for the tab icons and text
       tabBarActiveTintColor: theme.colors.primary,    // Color when tab is selected
@@ -99,9 +133,15 @@ export default function MainLayout() {
         }}
       />
     </Tabs>
+    </CollectionsProvider>
   );
 }
 const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   tabIcon: {
     width: 50,
     height: 50,
