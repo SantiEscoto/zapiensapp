@@ -33,6 +33,7 @@ Component Details:
 ### 5. Development Operations
 - [Monitoring](./monitoring.md) - Performance monitoring and logging
 - [Progress Log](./progress-log.md) - Development progress tracking
+- [**Validación y pruebas**](./TESTING-VALIDATION.md) - Checklist de pruebas automáticas y manuales (local + producción), resultados y problemas identificados
 
 ## Documentation Structure
 

@@ -35,10 +35,19 @@ En **Project → Settings → Environment Variables** añade (para **Production*
 
 En build, Expo inyecta las `EXPO_PUBLIC_*` en el bundle; sin ellas, auth y API fallarán en producción.
 
-### 2.3 Deploy
+### 2.3 Deploy (esta versión = la que funciona en localhost:8082)
 
-- **Deploy** desde el panel, o push a la rama conectada (ej. `main`).
-- La URL de producción será algo como `https://zapcards-xxx.vercel.app`.
+Para que **la misma versión** que probaste en `http://localhost:8082` quede en Vercel:
+
+**Opción A – Repo ya conectado a Vercel**  
+1. En la carpeta del proyecto: `git add .` → `git commit -m "Deploy: CollectionsProvider en raíz, colecciones funcionando"` → `git push origin main` (o la rama que uses).  
+2. Vercel hará el deploy automático. Revisa el panel de Vercel para ver el estado y la URL.
+
+**Opción B – Deploy desde la CLI**  
+1. En la carpeta `ZapCard`: `npm run build:web` (ya genera `dist/`).  
+2. Ejecuta: `npx vercel --prod`.  
+3. Si es la primera vez, inicia sesión cuando lo pida y asocia el proyecto (Root Directory = `ZapCard` si estás dentro de ella).  
+4. La URL de producción será algo como `https://zapcards-xxx.vercel.app`.
 
 ### 2.4 Configurar Supabase para la URL de producción
 

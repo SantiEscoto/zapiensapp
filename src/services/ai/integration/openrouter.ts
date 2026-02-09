@@ -97,7 +97,7 @@ export async function generateFlashCards(content: string, topics: string, existi
 
     // Check if the response is ok
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      const errorData = await response.json().catch(() => ({})) as { error?: { message?: string } };
       const errorMessage = errorData.error?.message || `API request failed with status ${response.status}`;
       
       // Implement retry logic for server errors (5xx) or rate limiting (429)
@@ -112,8 +112,8 @@ export async function generateFlashCards(content: string, topics: string, existi
       throw new Error(errorMessage);
     }
 
-    const data = await response.json();
-    const generatedContent = data.choices[0]?.message?.content;
+    const data = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
+    const generatedContent = data.choices?.[0]?.message?.content;
     if (!generatedContent) {
       throw new Error('No content generated');
     }
@@ -200,8 +200,8 @@ export async function generateCollectionInfo(topic: string, topics: string = 'Ge
       throw new Error('Failed to detect language');
     }
 
-    const languageData = await languageResponse.json();
-    const detectedLanguage = languageData.choices[0]?.message?.content?.trim() || 'en';
+    const languageData = await languageResponse.json() as { choices?: Array<{ message?: { content?: string } }> };
+    const detectedLanguage = languageData.choices?.[0]?.message?.content?.trim() || 'en';
 
     // Ahora generamos el contenido en el idioma detectado
     const prompt = `Based on the following topic or concept, generate a short name and a detailed description that can be used to create flashcards. The topic is: "${topic}"
@@ -267,13 +267,13 @@ export async function generateCollectionInfo(topic: string, topics: string = 'Ge
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      const errorData = await response.json().catch(() => ({})) as { error?: { message?: string } };
       const errorMessage = errorData.error?.message || `API request failed with status ${response.status}`;
       throw new Error(errorMessage);
     }
 
-    const data = await response.json();
-    const generatedContent = data.choices[0]?.message?.content;
+    const data = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
+    const generatedContent = data.choices?.[0]?.message?.content;
     
     if (!generatedContent) {
       throw new Error('No content generated');
@@ -343,7 +343,7 @@ The notes should be written in a way that helps understand how these topics rela
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      const errorData = await response.json().catch(() => ({})) as { error?: { message?: string } };
       const errorMessage = errorData.error?.message || `API request failed with status ${response.status}`;
       
       if ((response.status >= 500 || response.status === 429) && retryCount < MAX_RETRIES) {
@@ -356,8 +356,8 @@ The notes should be written in a way that helps understand how these topics rela
       throw new Error(errorMessage);
     }
 
-    const data = await response.json();
-    const generatedContent = data.choices[0]?.message?.content;
+    const data = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
+    const generatedContent = data.choices?.[0]?.message?.content;
     
     if (!generatedContent) {
       throw new Error('No content generated');

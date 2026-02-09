@@ -566,8 +566,8 @@ export default function EditScreen() {
 
       // Separar temas e idiomas
       const topics = collectionResponse.data.topics || [];
-      const languages = topics.filter(topic => availableLanguages.some(lang => lang.code === topic));
-      const selectedTopics = topics.filter(topic => availableTopics.some(t => t.id === topic));
+      const languages = topics.filter((topic: string) => availableLanguages.some(lang => lang.code === topic));
+      const selectedTopics = topics.filter((topic: string) => availableTopics.some(t => t.id === topic));
 
       // Actualizar los estados con los temas e idiomas
       setSelectedLanguages(languages);

@@ -9,7 +9,7 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web",
+    "web": "bash scripts/start-web.sh",
     "build:web": "expo export --platform web",
     "serve:web": "npx serve dist -l 3000 -s",
     "typecheck": "tsc --noEmit"

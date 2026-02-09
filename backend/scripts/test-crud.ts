@@ -33,7 +33,7 @@ async function main() {
     const { data: authData, error: signUpError } = await supabase.auth.signUp({
       email,
       password: 'TestPassword123!',
-      options: { emailConfirm: true },
+      options: {},
     });
     if (signUpError || !authData.user) {
       console.error('SignUp error:', signUpError?.message);

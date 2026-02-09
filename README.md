@@ -5,9 +5,10 @@ App con [`expo-router`](https://docs.expo.dev/router/introduction/), Supabase y 
 ## Requisitos
 
 - **Node 18 o 20** (recomendado 20). Con Node 16 aparece `ReadableStream is not defined` al ejecutar Expo.
-- Comprueba tu versión: `node -v`. Si sale v16.x o menor, actualiza:
-  - **Con nvm:** `nvm use 20` o `nvm install 20` (y en cada terminal nueva: `nvm use 20` o añade nvm al `.zshrc`).
-  - **Sin nvm:** instala Node 20 desde [nodejs.org](https://nodejs.org/) o con Homebrew: `brew install node@20` y usa ese Node.
+- **`npm run web`** ejecuta un script que intenta cargar nvm y usar Node 20 si está instalado (aunque nvm no esté en el PATH de esa terminal). Si aun así falla:
+  - Comprueba: `node -v`. Si sale v16.x o menor, actualiza:
+  - **Con nvm:** en una terminal donde sí tengas nvm: `nvm use 20` y luego `npm run web`; o añade nvm a tu `~/.zshrc` (ver [nvm](https://github.com/nvm-sh/nvm)).
+  - **Sin nvm:** instala Node 20 desde [nodejs.org](https://nodejs.org/) o `brew install node@20`.
 
 ## 🚀 Cómo usar
 

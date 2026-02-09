@@ -2,7 +2,6 @@ import { Tabs, useRouter } from "expo-router";
 import { View, StyleSheet, Image, ActivityIndicator } from "react-native";
 import { useEffect, useState } from "react";
 import { useTheme } from '../../src/context/ThemeContext';
-import { CollectionsProvider } from '../../src/context/CollectionsContext';
 import { supabase } from '../../src/services/supabase';
 
 export default function MainLayout() {
@@ -40,7 +39,6 @@ export default function MainLayout() {
   }
 
   return (
-    <CollectionsProvider>
     <Tabs screenOptions={{
       // Color settings for the tab icons and text
       tabBarActiveTintColor: theme.colors.primary,    // Color when tab is selected
@@ -133,7 +131,6 @@ export default function MainLayout() {
         }}
       />
     </Tabs>
-    </CollectionsProvider>
   );
 }
 const styles = StyleSheet.create({

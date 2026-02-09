@@ -28,7 +28,7 @@ async function main() {
   const { data: d1, error: e1 } = await supabase.auth.signUp({
     email: email1,
     password: 'TestPassword123!',
-    options: { emailConfirm: true },
+    options: {},
   });
   if (e1 || !d1.user) {
     console.error('SignUp user A:', e1?.message);
@@ -40,7 +40,7 @@ async function main() {
   const { data: d2, error: e2 } = await supabase.auth.signUp({
     email: email2,
     password: 'TestPassword123!',
-    options: { emailConfirm: true },
+    options: {},
   });
   if (e2 || !d2.user) {
     console.error('SignUp user B:', e2?.message);

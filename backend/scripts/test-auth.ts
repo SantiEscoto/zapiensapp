@@ -28,7 +28,7 @@ async function main() {
   const { data: authData, error: signUpError } = await supabase.auth.signUp({
     email: TEST_EMAIL,
     password: TEST_PASSWORD,
-    options: { emailConfirm: true },
+    options: {},
   });
 
   if (signUpError) {
