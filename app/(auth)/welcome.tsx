@@ -1,21 +1,29 @@
 import { useCallback, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image, Platform } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image, Platform, Modal, ScrollView } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { FONTS } from '../../src/services/fonts';
 import { useTheme } from '../../src/context/ThemeContext';
 import { FinisherHeaderBackground } from '../../src/components/common/FinisherHeaderBackground';
+import { LoginForm } from '../../src/components/auth/LoginForm';
+import { RegisterForm } from '../../src/components/auth/RegisterForm';
 
 export default function Welcome() {
   const router = useRouter();
   const { theme } = useTheme();
   const { colors } = theme;
   const [backgroundKey, setBackgroundKey] = useState(0);
+  const [authModal, setAuthModal] = useState<'login' | 'register' | null>(null);
 
   useFocusEffect(
     useCallback(() => {
       setBackgroundKey((k) => k + 1);
     }, [])
   );
+
+  const handleAuthSuccess = useCallback(() => {
+    setAuthModal(null);
+    router.replace('/home');
+  }, [router]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -44,7 +52,7 @@ export default function Welcome() {
       <View style={[styles.buttonContainer, styles.contentAboveBackground]}>
         <TouchableOpacity
           style={[styles.getStartedButton, { backgroundColor: colors.primary }]}
-          onPress={() => router.push('/register')}
+          onPress={() => setAuthModal('register')}
           activeOpacity={0.85}
         >
           <Text style={styles.getStartedText}>GET STARTED</Text>
@@ -52,7 +60,7 @@ export default function Welcome() {
 
         <TouchableOpacity
           style={[styles.loginButton, { borderColor: colors.primary }]}
-          onPress={() => router.push('/login')}
+          onPress={() => setAuthModal('login')}
           activeOpacity={0.85}
         >
           <Text style={[styles.loginText, { color: colors.primary }]}>
@@ -60,6 +68,40 @@ export default function Welcome() {
           </Text>
         </TouchableOpacity>
       </View>
+
+      <Modal
+        visible={authModal !== null}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setAuthModal(null)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
+            <ScrollView
+              contentContainerStyle={styles.modalScroll}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
+              {authModal === 'login' && (
+                <LoginForm
+                  onSuccess={handleAuthSuccess}
+                  onClose={() => setAuthModal(null)}
+                  onSwitchToRegister={() => setAuthModal('register')}
+                  isModal
+                />
+              )}
+              {authModal === 'register' && (
+                <RegisterForm
+                  onSuccess={handleAuthSuccess}
+                  onClose={() => setAuthModal(null)}
+                  onSwitchToLogin={() => setAuthModal('login')}
+                  isModal
+                />
+              )}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -106,6 +148,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: '100%',
+    maxWidth: 280,
+    alignSelf: 'center',
     paddingHorizontal: 8,
     paddingBottom: 40,
   },
@@ -134,5 +178,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: FONTS.title,
     letterSpacing: 0.5,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  modalContent: {
+    width: '100%',
+    maxWidth: 420,
+    maxHeight: '90%',
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  modalScroll: {
+    flexGrow: 1,
+    paddingBottom: 24,
   },
 });

@@ -8,9 +8,11 @@ if (typeof g.url === 'undefined') g.url = require('url');
 if (typeof g.crypto === 'undefined') g.crypto = require('crypto-browserify');
 
 // Importaciones necesarias para la navegación y temas
+import { useEffect } from 'react';
 import { Stack } from "expo-router";
 import { useFonts } from 'expo-font';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, StyleSheet, AppState } from 'react-native';
+import { supabase } from '../src/services/supabase';
 import { ThemeProvider, useTheme } from '../src/context/ThemeContext';
 import { PaperProvider } from 'react-native-paper';
 import { RootErrorBoundary } from '../src/components/common/RootErrorBoundary';
@@ -22,6 +24,15 @@ import { FONT_ASSETS } from '../src/services/fonts';
 function RootLayoutContent() {
   const { theme } = useTheme();
   const [fontsLoaded] = useFonts(FONT_ASSETS);
+
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') supabase.auth.startAutoRefresh();
+      else supabase.auth.stopAutoRefresh();
+    });
+    return () => sub.remove();
+  }, []);
+
   if (!fontsLoaded) {
     return (
       <View style={[styles.loading, { backgroundColor: theme.colors.background }]}>
