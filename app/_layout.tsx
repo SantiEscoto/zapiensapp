@@ -14,6 +14,7 @@ import { useFonts } from 'expo-font';
 import { View, ActivityIndicator, StyleSheet, AppState } from 'react-native';
 import { supabase } from '../src/services/supabase';
 import { ThemeProvider, useTheme } from '../src/context/ThemeContext';
+import { LanguageProvider } from '../src/context/LanguageContext';
 import { PaperProvider } from 'react-native-paper';
 import { RootErrorBoundary } from '../src/components/common/RootErrorBoundary';
 import { CollectionsProvider } from '../src/context/CollectionsContext';
@@ -59,11 +60,13 @@ export default function RootLayout() {
   return (
     <RootErrorBoundary>
       <ThemeProvider>
-        <PaperProvider>
-          <CollectionsProvider>
-            <RootLayoutContent />
-          </CollectionsProvider>
-        </PaperProvider>
+        <LanguageProvider>
+          <PaperProvider>
+            <CollectionsProvider>
+              <RootLayoutContent />
+            </CollectionsProvider>
+          </PaperProvider>
+        </LanguageProvider>
       </ThemeProvider>
     </RootErrorBoundary>
   );

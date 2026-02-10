@@ -1,0 +1,252 @@
+/**
+ * Traducciones por idioma. Claves en inglés (ej. welcome.getStarted).
+ * Locale = código ISO de los 10 idiomas soportados.
+ */
+export type Locale = 'en' | 'es' | 'fr' | 'de' | 'it' | 'pt' | 'ja' | 'zh' | 'ko' | 'ru';
+
+export type TranslationMap = Record<string, string>;
+
+const EN: TranslationMap = {
+  // Welcome
+  'welcome.heroTitle': 'ONE APP TO\nLEARN IT ALL',
+  'welcome.heroSubtitle': 'Join us and be part\nof this revolution',
+  'welcome.getStarted': 'GET STARTED',
+  'welcome.login': 'LOGIN',
+  // Auth
+  'auth.ingresaTusDatos': 'Enter your details',
+  'auth.correoOUsuario': 'Email or username',
+  'auth.password': 'Password',
+  'auth.confirmPassword': 'Confirm password',
+  'auth.acceder': 'ACCESS',
+  'auth.crearCuenta': 'CREATE ACCOUNT',
+  'auth.restablecerContraseña': 'RESET PASSWORD',
+  'auth.yaTienesCuenta': 'Already have an account? Log in',
+  'auth.noTienesCuenta': "Don't have an account? Sign up",
+  'auth.creaTuCuenta': 'Create your account',
+  'auth.correoElectronico': 'Email',
+  'auth.contraseña': 'Password',
+  'auth.terminosPolitica': 'By signing up for Zapiens, you agree to our ',
+  'auth.terminos': 'Terms',
+  'auth.y': ' and ',
+  'auth.politicas': 'Privacy Policy',
+  // Auth errors
+  'auth.error.usuarioNoEncontrado': 'User not found',
+  'auth.error.credencialesInvalidas': 'Invalid email or password',
+  'auth.error.confirmaEmail': 'Please verify your account via the link sent to your email before logging in.',
+  'auth.error.generico': 'An error occurred. Please try again.',
+  'auth.error.contraseñasNoCoinciden': 'Passwords do not match',
+  'auth.error.contraseñaMinimo': 'Password must be at least 6 characters',
+  'auth.error.emailYaRegistrado': 'This email is already registered',
+  'auth.error.noSePudoCrearCuenta': 'Could not create account. Please try again.',
+  'auth.success.confirmaEmail': 'Check your email to confirm your account. Then log in.',
+  // Settings
+  'settings.configuracion': 'Settings',
+  'settings.cuenta': 'Account',
+  'settings.editarPerfil': 'Edit Profile',
+  'settings.apariencia': 'Appearance',
+  'settings.temaYColores': 'Theme & Colors',
+  'settings.oscuro': 'Dark',
+  'settings.claro': 'Light',
+  'settings.idioma': 'Language',
+  'settings.informacion': 'Information',
+  'settings.politicaPrivacidad': 'Privacy Policy',
+  'settings.terminosUso': 'Terms of Use',
+  'settings.soporte': 'Support',
+  'settings.cerrarSesion': 'Log out',
+  'settings.eliminarCuenta': 'Delete account',
+  // Home
+  'home.bienvenido': 'Welcome, learn to create with Zapiens',
+  'home.diseñaPrimera': 'Design your first flashcard collection',
+  // Forgot password
+  'forgotPassword.title': 'Forgot your password?',
+  'forgotPassword.subtitle': 'Enter your email to receive a link to reset your password',
+  'forgotPassword.placeholder': 'Email',
+  'forgotPassword.next': 'NEXT',
+  'forgotPassword.requestByPhone': 'REQUEST BY PHONE INSTEAD',
+  'forgotPassword.error.enterEmail': 'Please enter your email address',
+  'forgotPassword.error.noAccount': 'No account is associated with this email address',
+  'forgotPassword.error.invalidEmail': 'Invalid email format',
+  'forgotPassword.error.generic': 'An error occurred while resetting the password',
+  'forgotPassword.success': 'If the email is registered, you will receive instructions to reset your password at your email address.',
+};
+
+const ES: TranslationMap = {
+  'welcome.heroTitle': 'UNA APP PARA\nAPRENDERLO TODO',
+  'welcome.heroSubtitle': 'Únete y sé parte\nde esta revolución',
+  'welcome.getStarted': 'EMPEZAR',
+  'welcome.login': 'INICIAR SESIÓN',
+  'auth.ingresaTusDatos': 'Ingresa tus datos',
+  'auth.correoOUsuario': 'Correo electrónico o nombre de usuario',
+  'auth.password': 'Contraseña',
+  'auth.confirmPassword': 'Confirmar contraseña',
+  'auth.acceder': 'ACCEDER',
+  'auth.crearCuenta': 'CREAR CUENTA',
+  'auth.restablecerContraseña': 'RESTABLECER CONTRASEÑA',
+  'auth.yaTienesCuenta': '¿Ya tienes una cuenta? Inicia sesión',
+  'auth.noTienesCuenta': '¿No tienes cuenta? Crear cuenta',
+  'auth.creaTuCuenta': 'Crea tu cuenta',
+  'auth.correoElectronico': 'Correo electrónico',
+  'auth.contraseña': 'Contraseña',
+  'auth.terminosPolitica': 'Al registrarse en Zapiens, usted acepta nuestros ',
+  'auth.terminos': 'Términos',
+  'auth.y': ' y ',
+  'auth.politicas': 'Políticas de Privacidad',
+  'auth.error.usuarioNoEncontrado': 'Usuario no encontrado',
+  'auth.error.credencialesInvalidas': 'Usuario o contraseña incorrectos',
+  'auth.error.confirmaEmail': 'Por favor, verifica tu cuenta a través del enlace enviado a tu correo electrónico antes de iniciar sesión.',
+  'auth.error.generico': 'Ha ocurrido un error. Por favor, inténtelo de nuevo.',
+  'auth.error.contraseñasNoCoinciden': 'Las contraseñas no coinciden',
+  'auth.error.contraseñaMinimo': 'La contraseña debe tener al menos 6 caracteres',
+  'auth.error.emailYaRegistrado': 'Este correo electrónico ya está registrado',
+  'auth.error.noSePudoCrearCuenta': 'No se pudo crear la cuenta. Inténtalo de nuevo.',
+  'auth.success.confirmaEmail': 'Revisa tu correo para confirmar tu cuenta. Luego inicia sesión.',
+  'settings.configuracion': 'Configuración',
+  'settings.cuenta': 'Cuenta',
+  'settings.editarPerfil': 'Editar Perfil',
+  'settings.apariencia': 'Apariencia',
+  'settings.temaYColores': 'Tema y Colores',
+  'settings.oscuro': 'Oscuro',
+  'settings.claro': 'Claro',
+  'settings.idioma': 'Idioma',
+  'settings.informacion': 'Información',
+  'settings.politicaPrivacidad': 'Política de Privacidad',
+  'settings.terminosUso': 'Términos de Uso',
+  'settings.soporte': 'Centro de Soporte',
+  'settings.cerrarSesion': 'Cerrar sesión',
+  'settings.eliminarCuenta': 'Eliminar cuenta',
+  'home.bienvenido': 'Bienvenido, aprende a crear con Zapiens',
+  'home.diseñaPrimera': 'Diseña tu primera colección de flashcards',
+  'forgotPassword.title': '¿Olvidó su contraseña?',
+  'forgotPassword.subtitle': 'Introduzca su correo electrónico para recibir un enlace y restablecer su contraseña',
+  'forgotPassword.placeholder': 'Correo electrónico',
+  'forgotPassword.next': 'SIGUIENTE',
+  'forgotPassword.requestByPhone': 'SOLICITAR POR NÚMERO EN SU LUGAR',
+  'forgotPassword.error.enterEmail': 'Por favor, introduce tu correo electrónico',
+  'forgotPassword.error.noAccount': 'No existe ninguna cuenta asociada a este correo electrónico',
+  'forgotPassword.error.invalidEmail': 'Formato de correo electrónico inválido',
+  'forgotPassword.error.generic': 'Ha ocurrido un error al restablecer la contraseña',
+  'forgotPassword.success': 'Si el correo está registrado, recibirá las instrucciones para restablecer la contraseña en su correo electrónico.',
+};
+
+const FR: TranslationMap = {
+  ...EN,
+  'welcome.heroTitle': 'UNE APP POUR\nTOUT APPRENDRE',
+  'welcome.heroSubtitle': 'Rejoignez-nous et faites partie\n de cette révolution',
+  'welcome.getStarted': 'COMMENCER',
+  'welcome.login': 'CONNEXION',
+  'auth.ingresaTusDatos': 'Entrez vos informations',
+  'auth.creaTuCuenta': 'Créez votre compte',
+  'auth.terminosPolitica': 'En vous inscrivant à Zapiens, vous acceptez nos ',
+  'settings.configuracion': 'Paramètres',
+  'settings.idioma': 'Langue',
+  'home.bienvenido': 'Bienvenue, apprenez avec Zapiens',
+};
+
+const DE: TranslationMap = { ...EN, ...{
+  'welcome.heroTitle': 'EINE APP ZUM\nALLES LERNEN',
+  'welcome.heroSubtitle': 'Mach mit und werde Teil\ndieser Revolution',
+  'welcome.getStarted': 'LOSLEGEN',
+  'welcome.login': 'ANMELDEN',
+  'auth.ingresaTusDatos': 'Gib deine Daten ein',
+  'auth.creaTuCuenta': 'Konto erstellen',
+  'auth.terminosPolitica': 'Mit der Anmeldung bei Zapiens akzeptierst du unsere ',
+  'settings.configuracion': 'Einstellungen',
+  'settings.idioma': 'Sprache',
+  'home.bienvenido': 'Willkommen, lerne mit Zapiens',
+} as TranslationMap };
+
+const IT: TranslationMap = { ...EN, ...{
+  'welcome.heroTitle': 'UN\'APP PER\nIMPARARE TUTTO',
+  'welcome.heroSubtitle': 'Unisciti e fai parte\ndi questa rivoluzione',
+  'welcome.getStarted': 'INIZIA',
+  'welcome.login': 'ACCEDI',
+  'auth.ingresaTusDatos': 'Inserisci i tuoi dati',
+  'auth.creaTuCuenta': 'Crea il tuo account',
+  'auth.terminosPolitica': 'Iscrivendoti a Zapiens accetti i nostri ',
+  'settings.configuracion': 'Impostazioni',
+  'settings.idioma': 'Lingua',
+  'home.bienvenido': 'Benvenuto, impara con Zapiens',
+} as TranslationMap };
+
+const PT: TranslationMap = { ...EN, ...{
+  'welcome.heroTitle': 'UM APP PARA\nAPRENDER TUDO',
+  'welcome.heroSubtitle': 'Junte-se e faça parte\ndesta revolução',
+  'welcome.getStarted': 'COMEÇAR',
+  'welcome.login': 'ENTRAR',
+  'auth.ingresaTusDatos': 'Digite seus dados',
+  'auth.creaTuCuenta': 'Crie sua conta',
+  'auth.terminosPolitica': 'Ao se inscrever no Zapiens, você concorda com nossos ',
+  'settings.configuracion': 'Configurações',
+  'settings.idioma': 'Idioma',
+  'home.bienvenido': 'Bem-vindo, aprenda com Zapiens',
+} as TranslationMap };
+
+const JA: TranslationMap = { ...EN, ...{
+  'welcome.heroTitle': 'すべてを学べる\nひとつのアプリ',
+  'welcome.heroSubtitle': '参加して、この革命の\n一翼を担いましょう',
+  'welcome.getStarted': '始める',
+  'welcome.login': 'ログイン',
+  'auth.ingresaTusDatos': '情報を入力',
+  'auth.creaTuCuenta': 'アカウント作成',
+  'auth.terminosPolitica': 'Zapiensに登録すると、次のことに同意したことになります：',
+  'settings.configuracion': '設定',
+  'settings.idioma': '言語',
+  'home.bienvenido': 'Zapiensで学びましょう',
+} as TranslationMap };
+
+const ZH: TranslationMap = { ...EN, ...{
+  'welcome.heroTitle': '一个应用\n学遍天下',
+  'welcome.heroSubtitle': '加入我们，成为这场\n革命的一部分',
+  'welcome.getStarted': '开始使用',
+  'welcome.login': '登录',
+  'auth.ingresaTusDatos': '输入您的信息',
+  'auth.creaTuCuenta': '创建账户',
+  'auth.terminosPolitica': '注册 Zapiens 即表示您同意我们的',
+  'settings.configuracion': '设置',
+  'settings.idioma': '语言',
+  'home.bienvenido': '欢迎使用 Zapiens 学习',
+} as TranslationMap };
+
+const KO: TranslationMap = { ...EN, ...{
+  'welcome.heroTitle': '모든 것을 배우는\n하나의 앱',
+  'welcome.heroSubtitle': '함께하고 이 혁신의\n일원이 되세요',
+  'welcome.getStarted': '시작하기',
+  'welcome.login': '로그인',
+  'auth.ingresaTusDatos': '정보 입력',
+  'auth.creaTuCuenta': '계정 만들기',
+  'auth.terminosPolitica': 'Zapiens에 가입하면 다음에 동의하는 것입니다: ',
+  'settings.configuracion': '설정',
+  'settings.idioma': '언어',
+  'home.bienvenido': 'Zapiens와 함께 배우세요',
+} as TranslationMap };
+
+const RU: TranslationMap = { ...EN, ...{
+  'welcome.heroTitle': 'ОДНО ПРИЛОЖЕНИЕ —\nВСЁ ИЗУЧИТЬ',
+  'welcome.heroSubtitle': 'Присоединяйтесь к этой\nреволюции',
+  'welcome.getStarted': 'НАЧАТЬ',
+  'welcome.login': 'ВОЙТИ',
+  'auth.ingresaTusDatos': 'Введите данные',
+  'auth.creaTuCuenta': 'Создать аккаунт',
+  'auth.terminosPolitica': 'Регистрируясь в Zapiens, вы соглашаетесь с нашими ',
+  'settings.configuracion': 'Настройки',
+  'settings.idioma': 'Язык',
+  'home.bienvenido': 'Добро пожаловать в Zapiens',
+} as TranslationMap };
+
+export const translations: Record<Locale, TranslationMap> = {
+  en: EN,
+  es: ES,
+  fr: FR,
+  de: DE,
+  it: IT,
+  pt: PT,
+  ja: JA,
+  zh: ZH,
+  ko: KO,
+  ru: RU,
+};
+
+export function getTranslation(locale: Locale, key: string): string {
+  const map = translations[locale] ?? EN;
+  return map[key] ?? EN[key as keyof TranslationMap] ?? key;
+}

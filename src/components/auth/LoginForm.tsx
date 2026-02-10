@@ -4,6 +4,7 @@ import { useState } from "react";
 import { supabase } from '../../services/supabase';
 import { FONTS } from '../../services/fonts';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export type LoginFormProps = {
   onSuccess: () => void;
@@ -15,6 +16,7 @@ export type LoginFormProps = {
 
 export function LoginForm({ onSuccess, onClose, isModal, onSwitchToRegister }: LoginFormProps) {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const { colors } = theme;
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -35,7 +37,7 @@ export function LoginForm({ onSuccess, onClose, isModal, onSwitchToRegister }: L
           .ilike('username', email)
           .single();
         if (userError || !userData) {
-          setError("Usuario no encontrado");
+          setError(t('auth.error.usuarioNoEncontrado'));
           setLoading(false);
           return;
         }
@@ -49,11 +51,11 @@ export function LoginForm({ onSuccess, onClose, isModal, onSwitchToRegister }: L
 
       if (signInError) {
         if (signInError.message === "Invalid login credentials") {
-          setError("Usuario o contraseña incorrectos");
+          setError(t('auth.error.credencialesInvalidas'));
         } else if (signInError.message === "Email not confirmed") {
-          setError("Por favor, verifica tu cuenta a través del enlace enviado a tu correo electrónico antes de iniciar sesión.");
+          setError(t('auth.error.confirmaEmail'));
         } else {
-          setError("Ha ocurrido un error. Por favor, inténtelo de nuevo.");
+          setError(t('auth.error.generico'));
         }
         return;
       }
@@ -76,7 +78,7 @@ export function LoginForm({ onSuccess, onClose, isModal, onSwitchToRegister }: L
       }
     } catch (err) {
       console.error('Error:', err);
-      setError("Ha ocurrido un error. Por favor, inténtelo de nuevo.");
+      setError(t('auth.error.generico'));
     } finally {
       setLoading(false);
     }
@@ -87,12 +89,12 @@ export function LoginForm({ onSuccess, onClose, isModal, onSwitchToRegister }: L
       <TouchableOpacity style={styles.backButton} onPress={onClose}>
         <Text style={[styles.backArrow, { color: colors.text }]}>←</Text>
       </TouchableOpacity>
-      <Text style={[styles.title, { color: colors.text }, isModal && styles.titleModal]}>Ingresa tus datos</Text>
+      <Text style={[styles.title, { color: colors.text }, isModal && styles.titleModal]}>{t('auth.ingresaTusDatos')}</Text>
 
       <View style={[styles.inputContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <TextInput
           style={[styles.input, styles.topInput, { backgroundColor: colors.card, color: colors.text, borderBottomColor: colors.border }]}
-          placeholder="Correo electrónico o nombre de usuario"
+          placeholder={t('auth.correoOUsuario')}
           placeholderTextColor={colors.textSecondary}
           value={emailOrUsername}
           onChangeText={setEmailOrUsername}
@@ -102,7 +104,7 @@ export function LoginForm({ onSuccess, onClose, isModal, onSwitchToRegister }: L
         <View style={styles.passwordContainer}>
           <TextInput
             style={[styles.input, styles.bottomInput, { backgroundColor: colors.card, color: colors.text }]}
-            placeholder="Password"
+            placeholder={t('auth.password')}
             placeholderTextColor={colors.textSecondary}
             value={password}
             onChangeText={setPassword}
@@ -127,33 +129,33 @@ export function LoginForm({ onSuccess, onClose, isModal, onSwitchToRegister }: L
         disabled={loading || !isFormValid}
       >
         <Text style={[styles.buttonText, { color: isFormValid ? '#FFFFFF' : colors.textSecondary }]}>
-          {loading ? "• • •" : "ACCEDER"}
+          {loading ? "• • •" : t('auth.acceder')}
         </Text>
       </TouchableOpacity>
 
       <Link href="/forgot-password" asChild>
         <TouchableOpacity style={styles.link}>
-          <Text style={[styles.linkText, { color: colors.primary }]}>RESTABLECER CONTRASEÑA</Text>
+          <Text style={[styles.linkText, { color: colors.primary }]}>{t('auth.restablecerContraseña')}</Text>
         </TouchableOpacity>
       </Link>
 
       {isModal && onSwitchToRegister ? (
         <TouchableOpacity style={styles.link} onPress={onSwitchToRegister}>
-          <Text style={[styles.linkText, { color: colors.primary }]}>¿No tienes cuenta? Crear cuenta</Text>
+          <Text style={[styles.linkText, { color: colors.primary }]}>{t('auth.noTienesCuenta')}</Text>
         </TouchableOpacity>
       ) : (
         <Link href="/register" asChild>
           <TouchableOpacity style={styles.link}>
-            <Text style={[styles.linkText, { color: colors.primary }]}>¿No tienes cuenta? Crear cuenta</Text>
+            <Text style={[styles.linkText, { color: colors.primary }]}>{t('auth.noTienesCuenta')}</Text>
           </TouchableOpacity>
         </Link>
       )}
 
       <View style={styles.termsContainer}>
-        <Text style={[styles.termsText, { color: colors.textSecondary }]}>Al registrarse en Zapiens, usted acepta nuestros </Text>
-        <TouchableOpacity><Text style={[styles.termsLink, { color: colors.primary }]}>Términos</Text></TouchableOpacity>
-        <Text style={[styles.termsText, { color: colors.textSecondary }]}> y </Text>
-        <TouchableOpacity><Text style={[styles.termsLink, { color: colors.primary }]}>Políticas de Privacidad</Text></TouchableOpacity>
+        <Text style={[styles.termsText, { color: colors.textSecondary }]}>{t('auth.terminosPolitica')}</Text>
+        <TouchableOpacity><Text style={[styles.termsLink, { color: colors.primary }]}>{t('auth.terminos')}</Text></TouchableOpacity>
+        <Text style={[styles.termsText, { color: colors.textSecondary }]}>{t('auth.y')}</Text>
+        <TouchableOpacity><Text style={[styles.termsLink, { color: colors.primary }]}>{t('auth.politicas')}</Text></TouchableOpacity>
       </View>
     </View>
   );

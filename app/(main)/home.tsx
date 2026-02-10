@@ -7,6 +7,7 @@ import { supabase } from '../../src/services/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { FONTS } from '../../src/services/fonts';
 import { useTheme } from '../../src/context/ThemeContext';
+import { useLanguage } from '../../src/context/LanguageContext';
 import { generateCollectionInfo } from '../../src/services/ai/integration/openrouter';
 import React from 'react';
 import { useCollections } from '../../src/context/CollectionsContext';
@@ -149,11 +150,12 @@ const FolderCard = memo(({ name, onPress, collection_ids }: { name: string, onPr
 
 const EmptyState = memo(({ onCreatePress }: { onCreatePress: () => void }) => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   return (
     <View style={styles.emptyStateContainer}>
-      <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>Bienvenido, aprende a crear con Zapiens</Text>
+      <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>{t('home.bienvenido')}</Text>
       <Text style={[styles.emptySubtitle, { color: theme.colors.textSecondary }]}>
-        Diseña tu primera colección de flashcards
+        {t('home.diseñaPrimera')}
       </Text>
       <TouchableOpacity
         style={[

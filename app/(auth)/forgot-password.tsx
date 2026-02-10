@@ -1,11 +1,16 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
-import { Link, useRouter } from "expo-router";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { supabase } from "../../src/services/supabase";
 import { FONTS } from '../../src/services/fonts';
+import { useTheme } from '../../src/context/ThemeContext';
+import { useLanguage } from '../../src/context/LanguageContext';
 
 export default function ForgotPassword() {
   const router = useRouter();
+  const { theme } = useTheme();
+  const { t } = useLanguage();
+  const { colors } = theme;
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -15,7 +20,7 @@ export default function ForgotPassword() {
 
   async function handleResetPassword() {
     if (!isFormValid) {
-      setError("Por favor, introduce tu correo electrónico");
+      setError(t('forgotPassword.error.enterEmail'));
       return;
     }
 
@@ -24,7 +29,6 @@ export default function ForgotPassword() {
       setError("");
       setMessage("");
       
-      // First check if user exists
       const { data: user } = await supabase
         .from('profiles')
         .select('*')
@@ -32,20 +36,18 @@ export default function ForgotPassword() {
         .single();
 
       if (!user) {
-        setError("No existe ninguna cuenta asociada a este correo electrónico");
+        setError(t('forgotPassword.error.noAccount'));
         return;
       }
       
-      // If user exists, proceed with password reset
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
-
-      if (error) throw error;
-      setMessage("Si el correo está registrado, recibirá las instrucciones para restablecer la contraseña a su correo electrónico.");
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email);
+      if (resetError) throw resetError;
+      setMessage(t('forgotPassword.success'));
     } catch (e: any) {
       if (e?.message === "Invalid email format") {
-        setError("Formato de correo electrónico inválido");
+        setError(t('forgotPassword.error.invalidEmail'));
       } else {
-        setError("Ha ocurrido un error al restablecer la contraseña");
+        setError(t('forgotPassword.error.generic'));
       }
     } finally {
       setLoading(false);
@@ -53,25 +55,25 @@ export default function ForgotPassword() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <TouchableOpacity 
         style={styles.closeButton}
         onPress={() => router.replace("/login")}
       >
-        <Text style={styles.closeButtonText}>✕</Text>
+        <Text style={[styles.closeButtonText, { color: colors.text }]}>✕</Text>
       </TouchableOpacity>
     
-      <Text style={styles.title}>¿Olvidó su contraseña?</Text>
+      <Text style={[styles.title, { color: colors.text }]}>{t('forgotPassword.title')}</Text>
       
-      <Text style={styles.subtitle}>
-        Introduzca su correo electrónico para recibir un link para reiniciar su contraseña
+      <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+        {t('forgotPassword.subtitle')}
       </Text>
       
-      <View style={styles.inputContainer}>
+      <View style={[styles.inputContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <TextInput
-          style={styles.input}
-          placeholder="Correo electrónico"
-          placeholderTextColor="#8E8E93"
+          style={[styles.input, { backgroundColor: colors.card, color: colors.text }]}
+          placeholder={t('forgotPassword.placeholder')}
+          placeholderTextColor={colors.textSecondary}
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
@@ -81,24 +83,28 @@ export default function ForgotPassword() {
     
       <View style={styles.errorContainer}>
         {error ? (
-          <Text style={styles.error}>{error}</Text>
+          <Text style={[styles.error, { color: colors.error }]}>{error}</Text>
         ) : message ? (
-          <Text style={styles.message}>{message}</Text>
+          <Text style={[styles.message, { color: colors.primary }]}>{message}</Text>
         ) : null}
       </View>
       
       <TouchableOpacity 
-        style={[styles.button, !isFormValid && styles.buttonDisabled]}
+        style={[
+          styles.button,
+          { backgroundColor: colors.primary },
+          !isFormValid && { backgroundColor: colors.card },
+        ]}
         onPress={handleResetPassword}
         disabled={loading || !isFormValid}
       >
-        <Text style={[styles.buttonText, !isFormValid && styles.buttonTextDisabled]}>
-          {loading ? "• • •" : "SIGUIENTE"}
+        <Text style={[styles.buttonText, { color: isFormValid ? '#FFFFFF' : colors.textSecondary }]}>
+          {loading ? "• • •" : t('forgotPassword.next')}
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.phoneButton}>
-        <Text style={styles.phoneButtonText}>SOLICITAR POR NÚMERO EN SU LUGAR</Text>
+        <Text style={[styles.phoneButtonText, { color: colors.primary }]}>{t('forgotPassword.requestByPhone')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -108,7 +114,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#131f24",
   },
   closeButton: {
     position: 'absolute',
@@ -117,86 +122,66 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   closeButtonText: {
-    color: "#FFFFFF",
     fontSize: 24,
     fontFamily: FONTS.title,
   },
   title: {
     fontSize: 32,
-    color: "#FFFFFF",
     marginTop: 100,
     marginBottom: 10,
     fontFamily: FONTS.title,
   },
   subtitle: {
     fontSize: 16,
-    color: "#FFFFFF",
     marginBottom: 30,
     fontFamily: FONTS.body,
   },
   inputContainer: {
     marginBottom: 20,
     width: "100%",
-    backgroundColor: "#202f36",
     borderRadius: 14,
     overflow: "hidden",
     borderWidth: 2,
-    borderColor: "#37464f"
   },
   input: {
-    backgroundColor: "#202f36",
     borderRadius: 8,
     padding: 15,
     marginBottom: 0,
-    color: "#FFFFFF",
     fontSize: 16,
     fontFamily: FONTS.body,
   },
   button: {
-    backgroundColor: "#1CB0F6",
     borderRadius: 14,
     padding: 16,
     alignItems: "center",
     marginTop: 10,
-    shadowColor: "#1999d6",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 0,
     elevation: 4,
   },
-  buttonDisabled: {
-    backgroundColor: "#202f36",
-    shadowColor: "#37464f",
-  },
   buttonText: {
-    color: "#FFFFFF",
     fontSize: 14,
     fontFamily: FONTS.title,
-  },
-  buttonTextDisabled: {
-    color: "#8E8E93",
   },
   phoneButton: {
     marginTop: 20,
     alignItems: "center",
   },
   phoneButtonText: {
-    color: "#1CB0F6",
     fontSize: 14,
     fontFamily: FONTS.title,
   },
   errorContainer: {
-    height: 40,
+    minHeight: 40,
     justifyContent: "center",
     alignItems: "center",
   },
   error: {
-    color: "#FF3B30",
     textAlign: "center",
     fontFamily: FONTS.body,
   },
   message: {
-    color: "#34C759",
     marginBottom: 15,
     textAlign: "center",
     fontFamily: FONTS.body,

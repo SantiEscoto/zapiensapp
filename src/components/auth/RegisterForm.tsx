@@ -4,6 +4,7 @@ import { useState } from "react";
 import { supabase } from '../../services/supabase';
 import { FONTS } from '../../services/fonts';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export type RegisterFormProps = {
   onSuccess: () => void;
@@ -16,6 +17,7 @@ export type RegisterFormProps = {
 
 export function RegisterForm({ onSuccess, onClose, isModal, onSwitchToLogin }: RegisterFormProps) {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const { colors } = theme;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,11 +33,11 @@ export function RegisterForm({ onSuccess, onClose, isModal, onSwitchToLogin }: R
     setSuccessMessage("");
     try {
       if (password !== confirmPassword) {
-        setError("Las contraseñas no coinciden");
+        setError(t('auth.error.contraseñasNoCoinciden'));
         return;
       }
       if (password.length < 6) {
-        setError("La contraseña debe tener al menos 6 caracteres");
+        setError(t('auth.error.contraseñaMinimo'));
         return;
       }
 
@@ -45,7 +47,7 @@ export function RegisterForm({ onSuccess, onClose, isModal, onSwitchToLogin }: R
 
       if (signUpError) {
         if (signUpError.message.includes("already registered")) {
-          setError("Este correo electrónico ya está registrado");
+          setError(t('auth.error.emailYaRegistrado'));
         } else {
           setError(signUpError.message);
         }
@@ -53,7 +55,7 @@ export function RegisterForm({ onSuccess, onClose, isModal, onSwitchToLogin }: R
       }
 
       if (!authData?.user) {
-        setError("No se pudo crear la cuenta. Inténtalo de nuevo.");
+        setError(t('auth.error.noSePudoCrearCuenta'));
         return;
       }
 
@@ -75,10 +77,10 @@ export function RegisterForm({ onSuccess, onClose, isModal, onSwitchToLogin }: R
         return;
       }
 
-      setSuccessMessage("Revisa tu correo para confirmar tu cuenta. Luego inicia sesión.");
+      setSuccessMessage(t('auth.success.confirmaEmail'));
     } catch (err: any) {
       console.error('Error:', err);
-      setError(err?.message || 'Ocurrió un error durante el registro');
+      setError(err?.message || t('auth.error.generico'));
     } finally {
       setLoading(false);
     }
@@ -89,12 +91,12 @@ export function RegisterForm({ onSuccess, onClose, isModal, onSwitchToLogin }: R
       <TouchableOpacity style={styles.backButton} onPress={onClose}>
         <Text style={[styles.backArrow, { color: colors.text }]}>←</Text>
       </TouchableOpacity>
-      <Text style={[styles.title, { color: colors.text }, isModal && styles.titleModal]}>Crea tu cuenta</Text>
+      <Text style={[styles.title, { color: colors.text }, isModal && styles.titleModal]}>{t('auth.creaTuCuenta')}</Text>
 
       <View style={[styles.inputContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <TextInput
           style={[styles.input, styles.topInput, { backgroundColor: colors.card, color: colors.text, borderBottomColor: colors.border }]}
-          placeholder="Correo electrónico"
+          placeholder={t('auth.correoElectronico')}
           placeholderTextColor={colors.textSecondary}
           value={email}
           onChangeText={setEmail}
@@ -104,7 +106,7 @@ export function RegisterForm({ onSuccess, onClose, isModal, onSwitchToLogin }: R
         <View style={styles.passwordContainer}>
           <TextInput
             style={[styles.input, styles.middleInput, { backgroundColor: colors.card, color: colors.text, borderBottomColor: colors.border }]}
-            placeholder="Contraseña"
+            placeholder={t('auth.contraseña')}
             placeholderTextColor={colors.textSecondary}
             value={password}
             onChangeText={setPassword}
@@ -117,7 +119,7 @@ export function RegisterForm({ onSuccess, onClose, isModal, onSwitchToLogin }: R
         <View style={styles.passwordContainer}>
           <TextInput
             style={[styles.input, styles.bottomInput, { backgroundColor: colors.card, color: colors.text }]}
-            placeholder="Confirmar contraseña"
+            placeholder={t('auth.confirmPassword')}
             placeholderTextColor={colors.textSecondary}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
@@ -143,27 +145,27 @@ export function RegisterForm({ onSuccess, onClose, isModal, onSwitchToLogin }: R
         disabled={loading || !isFormValid}
       >
         <Text style={[styles.buttonText, { color: isFormValid ? '#FFFFFF' : colors.textSecondary }]}>
-          {loading ? "• • •" : "CREAR CUENTA"}
+          {loading ? "• • •" : t('auth.crearCuenta')}
         </Text>
       </TouchableOpacity>
 
       {isModal && onSwitchToLogin ? (
         <TouchableOpacity style={styles.link} onPress={onSwitchToLogin}>
-          <Text style={[styles.linkText, { color: colors.primary }]}>¿Ya tienes una cuenta? Inicia sesión</Text>
+          <Text style={[styles.linkText, { color: colors.primary }]}>{t('auth.yaTienesCuenta')}</Text>
         </TouchableOpacity>
       ) : (
         <Link href="/login" asChild>
           <TouchableOpacity style={styles.link}>
-            <Text style={[styles.linkText, { color: colors.primary }]}>¿Ya tienes una cuenta? Inicia sesión</Text>
+            <Text style={[styles.linkText, { color: colors.primary }]}>{t('auth.yaTienesCuenta')}</Text>
           </TouchableOpacity>
         </Link>
       )}
 
       <View style={styles.termsContainer}>
-        <Text style={[styles.termsText, { color: colors.textSecondary }]}>Al registrarse en Zapiens, usted acepta nuestros </Text>
-        <TouchableOpacity><Text style={[styles.termsLink, { color: colors.primary }]}>Términos</Text></TouchableOpacity>
-        <Text style={[styles.termsText, { color: colors.textSecondary }]}> y </Text>
-        <TouchableOpacity><Text style={[styles.termsLink, { color: colors.primary }]}>Políticas de Privacidad</Text></TouchableOpacity>
+        <Text style={[styles.termsText, { color: colors.textSecondary }]}>{t('auth.terminosPolitica')}</Text>
+        <TouchableOpacity><Text style={[styles.termsLink, { color: colors.primary }]}>{t('auth.terminos')}</Text></TouchableOpacity>
+        <Text style={[styles.termsText, { color: colors.textSecondary }]}>{t('auth.y')}</Text>
+        <TouchableOpacity><Text style={[styles.termsLink, { color: colors.primary }]}>{t('auth.politicas')}</Text></TouchableOpacity>
       </View>
     </View>
   );

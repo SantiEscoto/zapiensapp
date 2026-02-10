@@ -6,7 +6,23 @@ import { Ionicons } from '@expo/vector-icons';
 import { Portal, Modal } from 'react-native-paper';
 import { FONTS } from '../../src/services/fonts';
 import { useTheme } from '../../src/context/ThemeContext';
+import { useLanguage } from '../../src/context/LanguageContext';
 import { createTheme, themeColors, type ColorTheme } from '../../src/services';
+import { languages } from '../../src/services/languages';
+import type { Locale } from '../../src/services/translations';
+
+const FLAG_IMAGES: Record<Locale, number> = {
+  en: require('../../assets/flags/en.png'),
+  es: require('../../assets/flags/es.png'),
+  fr: require('../../assets/flags/fr.png'),
+  de: require('../../assets/flags/de.png'),
+  it: require('../../assets/flags/it.png'),
+  pt: require('../../assets/flags/pt.png'),
+  ja: require('../../assets/flags/ja.png'),
+  zh: require('../../assets/flags/zh.png'),
+  ko: require('../../assets/flags/ko.png'),
+  ru: require('../../assets/flags/ru.png'),
+};
 
 // Add interfaces at the top of the file
 interface Errors {
@@ -54,6 +70,8 @@ export default function Settings() {
   const [isApplyingChanges, setIsApplyingChanges] = useState(false);
   const [deleteAccountConfirmVisible, setDeleteAccountConfirmVisible] = useState(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [languageModalVisible, setLanguageModalVisible] = useState(false);
+  const { locale, setLocale, t } = useLanguage();
 
   // Crear un tema temporal para previsualización usando useMemo
   const previewTheme = useMemo(() => createTheme(
@@ -271,23 +289,23 @@ export default function Settings() {
           <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
           </TouchableOpacity>
-          <Text style={[styles.title, { color: theme.colors.text }]}>Configuración</Text>
+          <Text style={[styles.title, { color: theme.colors.text }]}>{t('settings.configuracion')}</Text>
         </View>
 
         <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Cuenta</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('settings.cuenta')}</Text>
           
           <TouchableOpacity 
             style={[styles.button, { backgroundColor: theme.colors.card }]} 
             onPress={() => setProfilePortalVisible(true)}
           >
-            <Text style={[styles.buttonText, { color: theme.colors.text }]}>Editar Perfil</Text>
+            <Text style={[styles.buttonText, { color: theme.colors.text }]}>{t('settings.editarPerfil')}</Text>
             <Ionicons name="chevron-forward" size={20} color={theme.colors.text} />
           </TouchableOpacity>
         </View>
 
         <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Apariencia</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('settings.apariencia')}</Text>
           
           <TouchableOpacity 
             style={[styles.button, { backgroundColor: theme.colors.card }]} 
@@ -296,11 +314,29 @@ export default function Settings() {
             <View style={styles.buttonContent}>
               <View style={styles.buttonLeft}>
                 <Ionicons name="color-palette" size={24} color={theme.colors.primary} />
-                <Text style={[styles.buttonText, { color: theme.colors.text }]}>Tema y Colores</Text>
+                <Text style={[styles.buttonText, { color: theme.colors.text }]}>{t('settings.temaYColores')}</Text>
               </View>
               <View style={styles.buttonRight}>
                 <Text style={[styles.themeText, { color: theme.colors.textSecondary }]}>
-                  {theme.type === 'dark' ? 'Oscuro' : 'Claro'}
+                  {theme.type === 'dark' ? t('settings.oscuro') : t('settings.claro')}
+                </Text>
+                <Ionicons name="chevron-forward" size={20} color={theme.colors.text} />
+              </View>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.button, { backgroundColor: theme.colors.card }]} 
+            onPress={() => setLanguageModalVisible(true)}
+          >
+            <View style={styles.buttonContent}>
+              <View style={styles.buttonLeft}>
+                <Ionicons name="language" size={24} color={theme.colors.primary} />
+                <Text style={[styles.buttonText, { color: theme.colors.text }]}>{t('settings.idioma')}</Text>
+              </View>
+              <View style={styles.buttonRight}>
+                <Text style={[styles.themeText, { color: theme.colors.textSecondary }]}>
+                  {languages.find((l) => l.code === locale)?.name ?? locale}
                 </Text>
                 <Ionicons name="chevron-forward" size={20} color={theme.colors.text} />
               </View>
@@ -309,20 +345,20 @@ export default function Settings() {
         </View>
 
         <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Información</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('settings.informacion')}</Text>
           
           <TouchableOpacity style={[styles.button, { backgroundColor: theme.colors.card }]} onPress={navigateToPrivacyPolicy}>
-            <Text style={[styles.buttonText, { color: theme.colors.text }]}>Política de Privacidad</Text>
+            <Text style={[styles.buttonText, { color: theme.colors.text }]}>{t('settings.politicaPrivacidad')}</Text>
             <Ionicons name="chevron-forward" size={20} color={theme.colors.text} />
           </TouchableOpacity>
           
           <TouchableOpacity style={[styles.button, { backgroundColor: theme.colors.card }]} onPress={navigateToTermsOfUse}>
-            <Text style={[styles.buttonText, { color: theme.colors.text }]}>Términos de Uso</Text>
+            <Text style={[styles.buttonText, { color: theme.colors.text }]}>{t('settings.terminosUso')}</Text>
             <Ionicons name="chevron-forward" size={20} color={theme.colors.text} />
           </TouchableOpacity>
           
           <TouchableOpacity style={[styles.button, { backgroundColor: theme.colors.card }]} onPress={navigateToSupport}>
-            <Text style={[styles.buttonText, { color: theme.colors.text }]}>Centro de Ayuda y Feedback</Text>
+            <Text style={[styles.buttonText, { color: theme.colors.text }]}>{t('settings.soporte')}</Text>
             <Ionicons name="chevron-forward" size={20} color={theme.colors.text} />
           </TouchableOpacity>
         </View>
@@ -338,9 +374,42 @@ export default function Settings() {
           onPress={handleLogout}
         >
           <Ionicons name="log-out-outline" size={22} color="#FFFFFF" />
-          <Text style={styles.logoutButtonText}>Cerrar sesión</Text>
+          <Text style={styles.logoutButtonText}>{t('settings.cerrarSesion')}</Text>
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Modal selector de idioma */}
+      <Portal>
+        <Modal
+          visible={languageModalVisible}
+          onDismiss={() => setLanguageModalVisible(false)}
+          contentContainerStyle={[styles.modalContainer, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}
+        >
+          <Text style={[styles.modalTitle, { color: theme.colors.text }]}>{t('settings.idioma')}</Text>
+          <ScrollView style={{ maxHeight: 400 }} showsVerticalScrollIndicator={false}>
+            {languages.map((lang) => (
+              <TouchableOpacity
+                key={lang.code}
+                style={[styles.languageRow, { borderBottomColor: theme.colors.border }]}
+                onPress={() => {
+                  setLocale(lang.code as Locale);
+                  setLanguageModalVisible(false);
+                }}
+                activeOpacity={0.7}
+              >
+                <Image source={FLAG_IMAGES[lang.code as Locale]} style={styles.flagIcon} resizeMode="contain" />
+                <Text style={[styles.buttonText, { color: theme.colors.text }]}>{lang.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+          <TouchableOpacity
+            style={[styles.modalButton, { backgroundColor: theme.colors.primary }]}
+            onPress={() => setLanguageModalVisible(false)}
+          >
+            <Text style={styles.modalButtonText}>OK</Text>
+          </TouchableOpacity>
+        </Modal>
+      </Portal>
 
       {/* Portal para mensajes generales */}
       <Portal>
@@ -717,6 +786,18 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontFamily: FONTS.title,
+  },
+  languageRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+  },
+  flagIcon: {
+    width: 28,
+    height: 20,
+    marginRight: 12,
   },
   container: {
     flex: 1,
