@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Switch, ScrollView, TextInput
 import { supabase } from '../../src/services/supabase';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Eye, EyeOff } from 'lucide-react-native';
 import { Portal, Modal } from 'react-native-paper';
 import { FONTS } from '../../src/services/fonts';
 import { useTheme } from '../../src/context/ThemeContext';
@@ -517,10 +518,7 @@ export default function Settings() {
                   style={styles.eyeButton}
                   onPress={() => setShowPassword(!showPassword)}
                 >
-                  <Image 
-                    source={showPassword ? require('../../assets/pw1.png') : require('../../assets/pw0.png')} 
-                    style={styles.eyeIcon}
-                  />
+                  {showPassword ? <EyeOff size={24} color={theme.colors.textSecondary} /> : <Eye size={24} color={theme.colors.textSecondary} />}
                 </TouchableOpacity>
               </View>
               {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
@@ -545,10 +543,7 @@ export default function Settings() {
                   style={styles.eyeButton}
                   onPress={() => setShowNewPassword(!showNewPassword)}
                 >
-                  <Image 
-                    source={showNewPassword ? require('../../assets/pw1.png') : require('../../assets/pw0.png')} 
-                    style={styles.eyeIcon}
-                  />
+                  {showNewPassword ? <EyeOff size={24} color={theme.colors.textSecondary} /> : <Eye size={24} color={theme.colors.textSecondary} />}
                 </TouchableOpacity>
               </View>
               {errors.newPassword ? <Text style={styles.errorText}>{errors.newPassword}</Text> : null}
@@ -573,10 +568,7 @@ export default function Settings() {
                   style={styles.eyeButton}
                   onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
-                  <Image 
-                    source={showConfirmPassword ? require('../../assets/pw1.png') : require('../../assets/pw0.png')} 
-                    style={styles.eyeIcon}
-                  />
+                  {showConfirmPassword ? <EyeOff size={24} color={theme.colors.textSecondary} /> : <Eye size={24} color={theme.colors.textSecondary} />}
                 </TouchableOpacity>
               </View>
               {errors.confirmPassword ? <Text style={styles.errorText}>{errors.confirmPassword}</Text> : null}
@@ -979,10 +971,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 16,
     top: 12,
-  },
-  eyeIcon: {
-    width: 24,
-    height: 24,
   },
   profileModalContainer: {
     backgroundColor: 'white',

@@ -11,6 +11,20 @@ import { Ionicons } from '@expo/vector-icons'; // Make sure to install expo/vect
 import { useTheme } from '../../src/context/ThemeContext';
 import { useCollections } from '../../src/context/CollectionsContext';
 
+const FLAG_IMAGES: Record<string, number> = {
+  en: require('../../assets/flags/en.png'),
+  es: require('../../assets/flags/es.png'),
+  fr: require('../../assets/flags/fr.png'),
+  de: require('../../assets/flags/de.png'),
+  it: require('../../assets/flags/it.png'),
+  pt: require('../../assets/flags/pt.png'),
+  ja: require('../../assets/flags/ja.png'),
+  zh: require('../../assets/flags/zh.png'),
+  ko: require('../../assets/flags/ko.png'),
+  ru: require('../../assets/flags/ru.png'),
+  kk: require('../../assets/flags/kk.png'),
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -184,6 +198,29 @@ const styles = StyleSheet.create({
   chip: {
     marginRight: 8,
     marginBottom: 8,
+  },
+  languageGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  languageCell: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    borderWidth: 1.5,
+  },
+  languageFlagIcon: {
+    width: 28,
+    height: 20,
+    marginRight: 8,
+  },
+  languageCellName: {
+    fontFamily: FONTS.body,
+    fontSize: 15,
   },
   languageSelector: {
     flexDirection: 'row',
@@ -528,7 +565,8 @@ export default function EditScreen() {
     { code: 'ru', name: 'Русский' },
     { code: 'ja', name: '日本語' },
     { code: 'ko', name: '한국어' },
-    { code: 'zh', name: '中文' }
+    { code: 'zh', name: '中文' },
+    { code: 'kk', name: 'Kazakh' },
   ];
 
   const availableTopics = [
@@ -958,27 +996,32 @@ export default function EditScreen() {
 
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Idiomas</Text>
-            <View style={styles.chipContainer}>
-              {availableLanguages.map(language => (
-                <Chip
-                  key={language.code}
-                  selected={selectedLanguages.includes(language.code)}
-                  onPress={() => handleLanguageToggle(language.code)}
-                  style={[
-                    styles.chip,
-                    {
-                      backgroundColor: selectedLanguages.includes(language.code) ? theme.colors.primary : theme.colors.card,
-                      borderColor: theme.colors.border,
-                    },
-                  ]}
-                  textStyle={{
-                    color: theme.colors.text,
-                    fontFamily: FONTS.body,
-                  }}
-                >
-                  {language.name}
-                </Chip>
-              ))}
+            <View style={styles.languageGrid}>
+              {availableLanguages.map(language => {
+                const isSelected = selectedLanguages.includes(language.code);
+                const flagSource = FLAG_IMAGES[language.code];
+                return (
+                  <TouchableOpacity
+                    key={language.code}
+                    style={[
+                      styles.languageCell,
+                      {
+                        backgroundColor: isSelected ? `${theme.colors.primary}22` : 'transparent',
+                        borderColor: isSelected ? theme.colors.primary : theme.colors.border,
+                      },
+                    ]}
+                    onPress={() => handleLanguageToggle(language.code)}
+                    activeOpacity={0.7}
+                  >
+                    {flagSource ? (
+                      <Image source={flagSource} style={styles.languageFlagIcon} resizeMode="contain" />
+                    ) : null}
+                    <Text style={[styles.languageCellName, { color: theme.colors.text }]} numberOfLines={1}>
+                      {language.name}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </View>
         </ScrollView>

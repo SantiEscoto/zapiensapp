@@ -29,22 +29,46 @@ interface Folder {
 }
 
 // Constants
-// Language flags mapping
-const LANGUAGE_FLAGS = {
-  'German': require('../../assets/flags/de.png'),
-  'Portuguese': require('../../assets/flags/pt.png'),
+// Banderas por código de idioma (lo que se guarda en collection.topics desde edit)
+const FLAGS_BY_CODE: Record<string, number> = {
+  en: require('../../assets/flags/en.png'),
+  es: require('../../assets/flags/es.png'),
+  fr: require('../../assets/flags/fr.png'),
+  de: require('../../assets/flags/de.png'),
+  it: require('../../assets/flags/it.png'),
+  pt: require('../../assets/flags/pt.png'),
+  ja: require('../../assets/flags/ja.png'),
+  zh: require('../../assets/flags/zh.png'),
+  ko: require('../../assets/flags/ko.png'),
+  ru: require('../../assets/flags/ru.png'),
+  kk: require('../../assets/flags/kk.png'),
+};
+
+// Nombres de idioma (para compatibilidad con datos antiguos que guardaron "English", "Spanish")
+const LANGUAGE_FLAGS: Record<string, number> = {
+  'English': require('../../assets/flags/en.png'),
   'Spanish': require('../../assets/flags/es.png'),
   'French': require('../../assets/flags/fr.png'),
+  'German': require('../../assets/flags/de.png'),
   'Italian': require('../../assets/flags/it.png'),
+  'Portuguese': require('../../assets/flags/pt.png'),
   'Japanese': require('../../assets/flags/ja.png'),
   'Chinese': require('../../assets/flags/zh.png'),
   'Korean': require('../../assets/flags/ko.png'),
   'Russian': require('../../assets/flags/ru.png'),
-  'English': require('../../assets/flags/en.png'),
+  'Kazakh': require('../../assets/flags/kk.png'),
 };
 
-// Theme images mapping
-const THEME_IMAGES = {
+// Iconos de tema por id (edit guarda 'sports', 'history' en minúscula)
+const THEME_IMAGES: Record<string, number> = {
+  sports: require('../../assets/Themes/sports.png'),
+  history: require('../../assets/Themes/history.png'),
+  art: require('../../assets/Themes/art.png'),
+  science: require('../../assets/Themes/science.png'),
+  culture: require('../../assets/Themes/culture.png'),
+  nature: require('../../assets/Themes/nature.png'),
+  geography: require('../../assets/Themes/geography.png'),
+  // Mayúscula por si hay datos antiguos
   'Sports': require('../../assets/Themes/sports.png'),
   'History': require('../../assets/Themes/history.png'),
   'Art': require('../../assets/Themes/art.png'),
@@ -54,23 +78,9 @@ const THEME_IMAGES = {
   'Geography': require('../../assets/Themes/geography.png'),
 };
 
-// Helper functions
-const getLanguageFlag = (topic: string) => {
-  // Si el tema es un idioma, devolver la bandera correspondiente
-  const languageFlags: Record<string, any> = {
-    'English': require('../../assets/flags/en.png'),
-    'Spanish': require('../../assets/flags/es.png'),
-    'French': require('../../assets/flags/fr.png'),
-    'German': require('../../assets/flags/de.png'),
-    'Italian': require('../../assets/flags/it.png'),
-    'Portuguese': require('../../assets/flags/pt.png'),
-    'Japanese': require('../../assets/flags/ja.png'),
-    'Chinese': require('../../assets/flags/zh.png'),
-    'Korean': require('../../assets/flags/ko.png'),
-    'Russian': require('../../assets/flags/ru.png')
-  };
-
-  return languageFlags[topic] || require('../../assets/icons/home.png');
+// Helper: devuelve bandera, icono de tema o libro (por código o nombre)
+const getTopicIcon = (topic: string) => {
+  return FLAGS_BY_CODE[topic] ?? LANGUAGE_FLAGS[topic] ?? THEME_IMAGES[topic] ?? require('../../assets/icons/home.png');
 };
 
 // Reusable components
@@ -88,13 +98,24 @@ const CollectionCard = memo(({ collection, onPress }: { collection: Collection, 
     return collection.cover_url ? undefined : generateBackgroundColor(collection.id);
   }, [collection.id, collection.cover_url]);
 
-  // Filtrar solo los idiomas de los temas
+  // Temas: idiomas por código (en, es) → banderas; temas por id (sports, history) → iconos
   const languageTopics = useMemo(() => {
-    return collection.topics.filter(topic => 
-      Object.keys(LANGUAGE_FLAGS).includes(topic)
-    );
+    return collection.topics.filter(t => FLAGS_BY_CODE[t]);
   }, [collection.topics]);
-  
+  const themeTopics = useMemo(() => {
+    return collection.topics.filter(t => THEME_IMAGES[t]);
+  }, [collection.topics]);
+  const topicIcons = useMemo(() => {
+    if (languageTopics.length > 0) {
+      return languageTopics.slice(0, 3).map(code => ({ topic: code, source: FLAGS_BY_CODE[code] }));
+    }
+    if (themeTopics.length > 0) {
+      return themeTopics.slice(0, 3).map(t => ({ topic: t, source: THEME_IMAGES[t] }));
+    }
+    return [];
+  }, [languageTopics, themeTopics]);
+  const moreCount = languageTopics.length > 0 ? Math.max(0, languageTopics.length - 3) : Math.max(0, themeTopics.length - 3);
+
   return (
     <TouchableOpacity 
       style={styles.collectionCard}
@@ -104,18 +125,14 @@ const CollectionCard = memo(({ collection, onPress }: { collection: Collection, 
       <View style={{ flex: 1 }}>
         <View style={[styles.coverContainer, { backgroundColor }]}> 
           <View style={styles.flagContainer}>
-            {languageTopics.length > 0 ? (
+            {topicIcons.length > 0 ? (
               <View style={styles.flagsRow}>
-                {languageTopics.slice(0, 3).map((language, index) => (
-                  <Image 
-                    key={index}
-                    source={LANGUAGE_FLAGS[language as keyof typeof LANGUAGE_FLAGS]} 
-                    style={styles.flag} 
-                  />
+                {topicIcons.map(({ topic, source }, index) => (
+                  <Image key={`${topic}-${index}`} source={source} style={styles.flag} />
                 ))}
-                {languageTopics.length > 3 && (
+                {moreCount > 0 && (
                   <View style={styles.moreFlagsContainer}>
-                    <Text style={styles.moreFlagsText}>+{languageTopics.length - 3}</Text>
+                    <Text style={styles.moreFlagsText}>+{moreCount}</Text>
                   </View>
                 )}
               </View>
@@ -530,9 +547,9 @@ const CollectionScreen = memo(({
       fontFamily: FONTS.body,
     },
     collectionListItemFlag: {
-      width: 24,
-      height: 24,
-      borderRadius: 3,
+      width: 28,
+      height: 28,
+      borderRadius: 4,
     },
     createOptionsOverlayFixed: {
       position: 'absolute' as const,
@@ -757,7 +774,7 @@ const CollectionScreen = memo(({
                     </Text>
                   </View>
                   <Image 
-                    source={getLanguageFlag(collection.topics[0])} 
+                    source={getTopicIcon(collection.topics[0])} 
                     style={styles.collectionListItemFlag} 
                   />
                 </View>
@@ -1252,8 +1269,8 @@ const styles = StyleSheet.create({
     top: 8,
     right: 8,
     backgroundColor: '#fff',
-    borderRadius: 6,
-    padding: 3,
+    borderRadius: 8,
+    padding: 4,
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -1264,17 +1281,17 @@ const styles = StyleSheet.create({
   flagsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 2,
+    gap: 4,
   },
   flag: {
-    width: 24,
-    height: 24,
-    borderRadius: 3,
+    width: 30,
+    height: 30,
+    borderRadius: 4,
   },
   moreFlagsContainer: {
-    width: 24,
-    height: 24,
-    borderRadius: 3,
+    width: 30,
+    height: 30,
+    borderRadius: 4,
     backgroundColor: '#37464f',
     justifyContent: 'center',
     alignItems: 'center',
@@ -1282,7 +1299,7 @@ const styles = StyleSheet.create({
   },
   moreFlagsText: {
     color: '#FFFFFF',
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: FONTS.title,
   },
   titleOverlay: {
@@ -1616,9 +1633,9 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.body,
   },
   collectionListItemFlag: {
-    width: 24,
-    height: 24,
-    borderRadius: 3,
+    width: 28,
+    height: 28,
+    borderRadius: 4,
   },
   filterSection: {
     paddingVertical: 8,

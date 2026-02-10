@@ -39,6 +39,7 @@
     "expo-status-bar": "~3.0.9",
     "framer-motion": "^12.5.0",
     "lodash": "4.17.21",
+    "lucide-react-native": "^0.563.0",
     "next": "^15.2.3",
     "next-i18next": "^15.4.2",
     "openai": "4.87.3",

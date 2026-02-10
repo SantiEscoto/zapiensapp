@@ -111,6 +111,8 @@ export interface ThemeColors {
   border: string;
   primary: string;
   error: string;
+  /** Fondo semitransparente del botón outline (Login) para buena legibilidad sobre el fondo animado */
+  loginButtonOutlineBg: string;
 }
 
 export interface Theme {
@@ -135,6 +137,7 @@ export const createTheme = (type: ThemeType, colorTheme: ColorTheme): Theme => {
       border: palette.border,
       primary: themeColors[colorTheme],
       error: ERROR_RED,
+      loginButtonOutlineBg: isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.06)',
     },
   };
 };

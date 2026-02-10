@@ -1,4 +1,5 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { Eye, EyeOff } from "lucide-react-native";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { supabase } from '../../services/supabase';
@@ -113,7 +114,7 @@ export function RegisterForm({ onSuccess, onClose, isModal, onSwitchToLogin }: R
             secureTextEntry={!showPassword}
           />
           <TouchableOpacity style={styles.eyeButton} onPress={() => setShowPassword(!showPassword)}>
-            <Image source={showPassword ? require('../../../assets/pw1.png') : require('../../../assets/pw0.png')} style={styles.eyeIcon} />
+            {showPassword ? <EyeOff size={24} color={colors.textSecondary} /> : <Eye size={24} color={colors.textSecondary} />}
           </TouchableOpacity>
         </View>
         <View style={styles.passwordContainer}>
@@ -126,7 +127,7 @@ export function RegisterForm({ onSuccess, onClose, isModal, onSwitchToLogin }: R
             secureTextEntry={!showConfirmPassword}
           />
           <TouchableOpacity style={styles.eyeButton} onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-            <Image source={showConfirmPassword ? require('../../../assets/pw1.png') : require('../../../assets/pw0.png')} style={styles.eyeIcon} />
+            {showConfirmPassword ? <EyeOff size={24} color={colors.textSecondary} /> : <Eye size={24} color={colors.textSecondary} />}
           </TouchableOpacity>
         </View>
       </View>
@@ -240,10 +241,6 @@ const styles = StyleSheet.create({
     zIndex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  eyeIcon: {
-    width: 24,
-    height: 24,
   },
   errorContainer: {
     minHeight: 40,

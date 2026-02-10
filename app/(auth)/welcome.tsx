@@ -28,7 +28,7 @@ const FLAG_IMAGES: Record<Locale, number> = {
 export default function Welcome() {
   const router = useRouter();
   const { theme } = useTheme();
-  const { t, setLocale } = useLanguage();
+  const { t, setLocale, locale } = useLanguage();
   const { colors } = theme;
   const [backgroundKey, setBackgroundKey] = useState(0);
   const [authModal, setAuthModal] = useState<'login' | 'register' | null>(null);
@@ -92,7 +92,7 @@ export default function Welcome() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.loginButton, { borderColor: colors.primary }]}
+          style={[styles.loginButton, { borderColor: colors.primary, backgroundColor: colors.loginButtonOutlineBg }]}
           onPress={() => setAuthModal('login')}
           activeOpacity={0.85}
         >
@@ -115,19 +115,28 @@ export default function Welcome() {
         >
           <View style={[styles.languageModalContent, { backgroundColor: colors.card }]} onStartShouldSetResponder={() => true}>
             <Text style={[styles.languageModalTitle, { color: colors.text }]}>{t('settings.idioma')}</Text>
-            <ScrollView style={styles.languageList} showsVerticalScrollIndicator={false}>
-              {languages.map((lang) => (
-                <TouchableOpacity
-                  key={lang.code}
-                  style={[styles.languageRow, { borderBottomColor: colors.border }]}
-                  onPress={() => handleSelectLocale(lang.code as Locale)}
-                  activeOpacity={0.7}
-                >
-                  <Image source={FLAG_IMAGES[lang.code as Locale]} style={styles.flagIcon} resizeMode="contain" />
-                  <Text style={[styles.languageName, { color: colors.text }]}>{lang.name}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+            <View style={styles.languageGrid}>
+              {languages.map((lang) => {
+                const isSelected = locale === lang.code;
+                return (
+                  <TouchableOpacity
+                    key={lang.code}
+                    style={[
+                      styles.languageCell,
+                      {
+                        backgroundColor: isSelected ? `${colors.primary}22` : 'transparent',
+                        borderColor: isSelected ? colors.primary : colors.border,
+                      },
+                    ]}
+                    onPress={() => handleSelectLocale(lang.code as Locale)}
+                    activeOpacity={0.7}
+                  >
+                    <Image source={FLAG_IMAGES[lang.code as Locale]} style={styles.flagIcon} resizeMode="contain" />
+                    <Text style={[styles.languageName, { color: colors.text }]} numberOfLines={1}>{lang.name}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
         </TouchableOpacity>
       </Modal>
@@ -230,7 +239,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   loginButton: {
-    backgroundColor: 'transparent',
     borderRadius: 50,
     height: 52,
     justifyContent: 'center',
@@ -280,8 +288,7 @@ const styles = StyleSheet.create({
   },
   languageModalContent: {
     width: '100%',
-    maxWidth: 320,
-    maxHeight: '80%',
+    maxWidth: 360,
     borderRadius: 16,
     padding: 20,
     overflow: 'hidden',
@@ -292,23 +299,27 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: 'center',
   },
-  languageList: {
-    maxHeight: 400,
+  languageGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
   },
-  languageRow: {
+  languageCell: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 8,
-    borderBottomWidth: 1,
+    alignSelf: 'flex-start',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    borderWidth: 1.5,
   },
   flagIcon: {
     width: 28,
     height: 20,
-    marginRight: 12,
+    marginRight: 8,
   },
   languageName: {
     fontFamily: FONTS.body,
-    fontSize: 16,
+    fontSize: 15,
   },
 });
