@@ -2,7 +2,7 @@
  * Traducciones por idioma. Claves en inglés (ej. welcome.getStarted).
  * Locale = código ISO de los 10 idiomas soportados.
  */
-export type Locale = 'en' | 'es' | 'fr' | 'de' | 'it' | 'pt' | 'ja' | 'zh' | 'ko' | 'ru';
+export type Locale = 'en' | 'es' | 'fr' | 'de' | 'it' | 'pt' | 'ja' | 'zh' | 'ko' | 'ru' | 'kk';
 
 export type TranslationMap = Record<string, string>;
 
@@ -233,6 +233,66 @@ const RU: TranslationMap = { ...EN, ...{
   'home.bienvenido': 'Добро пожаловать в Zapiens',
 } as TranslationMap };
 
+// Kazakh (Kazakhstan) — Қазақша
+const KK: TranslationMap = {
+  ...EN,
+  'welcome.heroTitle': 'БІР ҚОЛДАНБАДА\nБАРЛЫҒЫН ҮЙРЕН',
+  'welcome.heroSubtitle': 'Бізге қосылыңыз және осы\nтөңкерістің бөлігі болыңыз',
+  'welcome.getStarted': 'БАСТАУ',
+  'welcome.login': 'КІРУ',
+  'auth.ingresaTusDatos': 'Деректеріңізді енгізіңіз',
+  'auth.correoOUsuario': 'Электрондық пошта немесе пайдаланушы аты',
+  'auth.password': 'Құпия сөз',
+  'auth.confirmPassword': 'Құпия сөзді растау',
+  'auth.acceder': 'КІРУ',
+  'auth.crearCuenta': 'ТІРКЕЛУ',
+  'auth.restablecerContraseña': 'ҚҰПИЯ СӨЗДІ ҚАЛПЫНА КЕЛТІРУ',
+  'auth.yaTienesCuenta': 'Аккаунтыңыз бар ма? Кіріңіз',
+  'auth.noTienesCuenta': 'Аккаунтыңыз жоқ па? Тіркеліңіз',
+  'auth.creaTuCuenta': 'Аккаунт жасаңыз',
+  'auth.correoElectronico': 'Электрондық пошта',
+  'auth.contraseña': 'Құпия сөз',
+  'auth.terminosPolitica': 'Zapiens-ке тіркелу арқылы сіз біздің ',
+  'auth.terminos': 'Шарттар',
+  'auth.y': ' және ',
+  'auth.politicas': 'Құпиялылық саясатымен келісесіз.',
+  'auth.error.usuarioNoEncontrado': 'Пайдаланушы табылмады',
+  'auth.error.credencialesInvalidas': 'Электрондық пошта немесе құпия сөз қате',
+  'auth.error.confirmaEmail': 'Кіру алдында электрондық поштаңызға жіберілген сілтемені пайдаланып аккаунтыңызды растаңыз.',
+  'auth.error.generico': 'Қате орын алды. Қайта көріңіз.',
+  'auth.error.contraseñasNoCoinciden': 'Құпия сөздер сәйкес келмейді',
+  'auth.error.contraseñaMinimo': 'Құпия сөз кем дегенде 6 таңбадан тұруы керек',
+  'auth.error.emailYaRegistrado': 'Бұл электрондық пошта тіркелген',
+  'auth.error.noSePudoCrearCuenta': 'Аккаунт жасалуы мүмкін болмады. Қайта көріңіз.',
+  'auth.success.confirmaEmail': 'Аккаунтыңызды растау үшін электрондық поштаңызды тексеріңіз. Содан кейін кіріңіз.',
+  'settings.configuracion': 'Баптаулар',
+  'settings.cuenta': 'Аккаунт',
+  'settings.editarPerfil': 'Профильді өңдеу',
+  'settings.apariencia': 'Сыртқы түр',
+  'settings.temaYColores': 'Тақырып және түстер',
+  'settings.oscuro': 'Қараңғы',
+  'settings.claro': 'Жарық',
+  'settings.idioma': 'Тіл',
+  'settings.informacion': 'Ақпарат',
+  'settings.politicaPrivacidad': 'Құпиялылық саясаты',
+  'settings.terminosUso': 'Пайдалану шарттары',
+  'settings.soporte': 'Қолдау орталығы',
+  'settings.cerrarSesion': 'Шығу',
+  'settings.eliminarCuenta': 'Аккаунтты жою',
+  'home.bienvenido': 'Zapiensпен бірге үйреніңіз',
+  'home.diseñaPrimera': 'Алғашқы флеш-карталар жинағын жасаңыз',
+  'forgotPassword.title': 'Құпия сөзіңізді ұмыттыңыз ба?',
+  'forgotPassword.subtitle': 'Құпия сөзді қалпына келтіру сілтемесін алу үшін электрондық поштаңызды енгізіңіз',
+  'forgotPassword.placeholder': 'Электрондық пошта',
+  'forgotPassword.next': 'КЕЛЕСІ',
+  'forgotPassword.requestByPhone': 'ТЕЛЕФОН НӨМІРІМЕН СҰРАУ',
+  'forgotPassword.error.enterEmail': 'Электрондық поштаңызды енгізіңіз',
+  'forgotPassword.error.noAccount': 'Бұл электрондық поштамен ешқандай аккаунт байланысты емес',
+  'forgotPassword.error.invalidEmail': 'Электрондық пошта форматы қате',
+  'forgotPassword.error.generic': 'Құпия сөзді қалпына келтіру кезінде қате орын алды',
+  'forgotPassword.success': 'Егер пошта тіркелген болса, құпия сөзді қалпына келтіру нұсқаулары электрондық поштаңызға жіберіледі.',
+};
+
 export const translations: Record<Locale, TranslationMap> = {
   en: EN,
   es: ES,
@@ -244,6 +304,7 @@ export const translations: Record<Locale, TranslationMap> = {
   zh: ZH,
   ko: KO,
   ru: RU,
+  kk: KK,
 };
 
 export function getTranslation(locale: Locale, key: string): string {

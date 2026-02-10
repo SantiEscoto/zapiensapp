@@ -22,6 +22,7 @@ const FLAG_IMAGES: Record<Locale, number> = {
   zh: require('../../assets/flags/zh.png'),
   ko: require('../../assets/flags/ko.png'),
   ru: require('../../assets/flags/ru.png'),
+  kk: require('../../assets/flags/kk.png'),
 };
 
 export default function Welcome() {
