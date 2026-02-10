@@ -2,9 +2,8 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, AppState } 
 import { Link } from "expo-router";
 import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
-import { useFonts } from 'expo-font';
 import { supabase } from '../../src/services/supabase';
-import { FONTS, FONT_ASSETS } from '../../src/services/fonts';
+import { FONTS } from '../../src/services/fonts';
 
 // Configure auto-refresh for authentication session
 AppState.addEventListener('change', (state) => {
@@ -18,18 +17,12 @@ AppState.addEventListener('change', (state) => {
 // Definición del componente principal de la pantalla de Login
 export default function Login() {
   const router = useRouter();
-  const [loaded] = useFonts(FONT_ASSETS);
-
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const isFormValid = emailOrUsername.length > 0 && password.length > 0;  // Updated this line
-
-  if (!loaded) {
-    return null; // or a loading indicator
-  }
 
   async function signInWithEmail() {
     setLoading(true);
@@ -85,16 +78,12 @@ export default function Login() {
           throw profileError;
         }
 
-        // If profile doesn't exist, create one
+        // If profile doesn't exist, create one (username y full_name generados por RPC)
         if (!profile) {
-          const { error: createError } = await supabase.from('profiles').insert([
-            {
-              id: authData.user.id,
-              email: authData.user.email,
-              updated_at: new Date().toISOString(),
-            },
-          ]);
-
+          const { error: createError } = await supabase.rpc('create_profile_with_generated_fields', {
+            p_id: authData.user.id,
+            p_email: authData.user.email ?? '',
+          });
           if (createError) throw createError;
         }
 
@@ -115,7 +104,9 @@ export default function Login() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`
+          redirectTo: `${window.location.origin}/auth/callback`,
+          // Scopes requeridos por Supabase para obtener email (evita 500 "Error getting user email from external provider")
+          scopes: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
         }
       });
 
@@ -265,7 +256,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
     textAlign: "center",
     marginBottom: 20,
-    fontFamily: "DINNextRoundedLTPro-Bold",
+    fontFamily: FONTS.title,
   },
   // Contenedor principal de la pantalla
   container: {
@@ -289,7 +280,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: "#FFFFFF",
     fontSize: 16,
-    fontFamily: "DINNextRoundedLTPro-Regular",
+    fontFamily: FONTS.body,
   },
   topInput: {
     borderBottomWidth: 2,
@@ -305,14 +296,14 @@ const styles = StyleSheet.create({
   linkText: {
     color: "#1CB0F6", // Color azul claro
     fontSize: 14, // Tamaño del texto
-    fontFamily: "DINNextRoundedLTPro-Bold", // Fuente personalizada
+    fontFamily: FONTS.title, // Fuente personalizada
   },
   // Texto del botón social (como Google)
   socialButtonText: {
     color: "#FFFFFF", // Texto en blanco
     fontSize: 14, // Tamaño del texto
     textAlign: "center", // Alineación centrada
-    fontFamily: "DINNextRoundedLTPro-Bold", // Fuente personalizada
+    fontFamily: FONTS.title, // Fuente personalizada
   },
   // Estilo del botón principal
   button: {
@@ -334,7 +325,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FFFFFF",
     fontSize: 14,
-    fontFamily: "DINNextRoundedLTPro-Bold",
+    fontFamily: FONTS.title,
   },
   buttonTextDisabled: {
     color: "#8E8E93",
@@ -343,7 +334,7 @@ const styles = StyleSheet.create({
   buttonTextStyle: {
     color: "#FFFFFF", // Texto en blanco
     fontSize: 14, // Tamaño del texto
-    fontWeight: "bold", // Texto en negritas
+    fontFamily: FONTS.bodyBold,
   },
   // Estilo del contenedor de enlaces
   link: {
@@ -352,9 +343,9 @@ const styles = StyleSheet.create({
   },
   // Texto del enlace para restablecer contraseña
   resetPasswordLinkText: {
-    color: "#1CB0F6", // Color azul claro
-    fontSize: 14, // Tamaño del texto
-    fontWeight: "bold", // Texto en negritas
+    color: "#1CB0F6",
+    fontSize: 14,
+    fontFamily: FONTS.bodyBold,
   },
   // Estilo del mensaje de error
   errorContainer: {
@@ -365,7 +356,7 @@ const styles = StyleSheet.create({
   error: {
     color: "#FF3B30",
     textAlign: "center",
-    fontFamily: "DINNextRoundedLTPro-Regular",
+    fontFamily: FONTS.body,
   },
   errorBetween: {
     marginVertical: 10,
@@ -430,7 +421,7 @@ const styles = StyleSheet.create({
   termsLink: {
     color: "#1CB0F6", // Color azul claro
     fontSize: 14, // Tamaño del texto
-    fontWeight: "bold", // Texto en negritas
+    fontFamily: FONTS.bodyBold,
   },
   backButton: {
     position: 'absolute',
@@ -442,6 +433,6 @@ const styles = StyleSheet.create({
   backArrow: {
     color: '#FFFFFF',
     fontSize: 30,
-    fontWeight: 'bold',
+    fontFamily: FONTS.title,
   },
 });

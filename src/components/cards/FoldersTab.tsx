@@ -4,6 +4,7 @@ import { Card, Text, IconButton, Button, TextInput, Portal, Modal } from 'react-
 import { supabase } from '../../services/supabase';
 import { StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { FONTS } from '../../services/fonts';
 
 interface Folder {
   id: string;
@@ -96,7 +97,7 @@ export default function FoldersTab() {
               )}
             />
             <Card.Content>
-              <Text variant="bodyMedium">
+              <Text variant="bodyMedium" style={styles.bodyText}>
                 {folder.collection_ids.length} collections
               </Text>
             </Card.Content>
@@ -199,7 +200,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: 'center',
     color: '#FFFFFF',
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
+  },
+  bodyText: {
+    fontFamily: FONTS.body,
   },
   input: {
     marginBottom: 16,

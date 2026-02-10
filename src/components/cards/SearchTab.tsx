@@ -4,6 +4,7 @@ import { Text, Card, ActivityIndicator, Searchbar } from 'react-native-paper';
 import { useState, useCallback, useEffect } from 'react';
 import debounce from 'lodash/debounce';
 import { supabase } from '../../services/supabase';
+import { FONTS } from '../../services/fonts';
 
 // Interfaz para definir la estructura de una colección
 interface Collection {
@@ -168,12 +169,13 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontFamily: FONTS.title,
     color: 'white',
     marginBottom: 8,
   },
   headerSubtitle: {
     fontSize: 16,
+    fontFamily: FONTS.body,
     color: '#8E8E93',
   },
   searchBar: {
@@ -194,7 +196,7 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: FONTS.title,
     color: 'white',
     textAlign: 'center',
     marginBottom: 8,
@@ -203,6 +205,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 8,
     opacity: 0.7,
+    fontFamily: FONTS.body,
     color: '#8E8E93',
   },
   results: {
@@ -229,12 +232,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     color: 'white',
-    fontWeight: 'bold',
+    fontFamily: FONTS.title,
     marginBottom: 4,
   },
   cardLanguage: {
     fontSize: 14,
     textAlign: 'center',
+    fontFamily: FONTS.body,
     color: '#1CB0F6',
   },
 });

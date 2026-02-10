@@ -1,12 +1,11 @@
-import { View, Text, TouchableOpacity, StyleSheet, Animated, ScrollView, TextInput, ActivityIndicator, Image, useWindowDimensions, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Animated, ScrollView, TextInput, ActivityIndicator, Image, useWindowDimensions, Alert, Platform } from 'react-native';
 import { Portal, Modal } from 'react-native-paper';
 import { useState, useRef, useEffect, useCallback, memo, useMemo } from 'react';
 import debounce from 'lodash/debounce';
-import { useFonts } from 'expo-font';
 import { router, useRouter, useFocusEffect } from 'expo-router';
 import { supabase } from '../../src/services/supabase';
 import { Ionicons } from '@expo/vector-icons';
-import { FONTS, FONT_ASSETS } from '../../src/services/fonts';
+import { FONTS } from '../../src/services/fonts';
 import { useTheme } from '../../src/context/ThemeContext';
 import { generateCollectionInfo } from '../../src/services/ai/integration/openrouter';
 import React from 'react';
@@ -148,21 +147,42 @@ const FolderCard = memo(({ name, onPress, collection_ids }: { name: string, onPr
   </TouchableOpacity>
 ));
 
-const EmptyState = memo(({ onCreatePress }: { onCreatePress: () => void }) => (
-  <View style={styles.emptyStateContainer}>
-    <Text style={styles.emptyTitle}>Bienvenido, aprenda a crear ZapCards</Text>
-    <Text style={styles.emptySubtitle}>Diseña tu primera colección de flashcards</Text>
-    <TouchableOpacity style={styles.createButton} onPress={onCreatePress}>
-      <Text style={styles.createButtonText}>+</Text>
-    </TouchableOpacity>
-  </View>
-));
+const EmptyState = memo(({ onCreatePress }: { onCreatePress: () => void }) => {
+  const { theme } = useTheme();
+  return (
+    <View style={styles.emptyStateContainer}>
+      <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>Bienvenido, aprenda a crear ZapCards</Text>
+      <Text style={[styles.emptySubtitle, { color: theme.colors.textSecondary }]}>
+        Diseña tu primera colección de flashcards
+      </Text>
+      <TouchableOpacity
+        style={[
+          styles.createButton,
+          {
+            backgroundColor: theme.colors.primary,
+            shadowColor: theme.colors.primary,
+            shadowOpacity: 0.55,
+            shadowRadius: 14,
+            elevation: 14,
+          },
+        ]}
+        onPress={onCreatePress}
+        activeOpacity={0.85}
+      >
+        <Text style={styles.createButtonText}>+</Text>
+      </TouchableOpacity>
+    </View>
+  );
+});
 
-const LoadingIndicator = memo(() => (
-  <View style={styles.loadingContainer}>
-    <ActivityIndicator size="large" color="#1CB0F6" />
-  </View>
-));
+const LoadingIndicator = memo(() => {
+  const { theme } = useTheme();
+  return (
+    <View style={[styles.loadingContainer, { backgroundColor: theme.colors.background }]}>
+      <ActivityIndicator size="large" color={theme.colors.primary} />
+    </View>
+  );
+});
 
 const ErrorDisplay = memo(({ message }: { message: string }) => (
   <View style={styles.emptyStateContainer}>
@@ -329,7 +349,8 @@ const CollectionScreen = memo(({
       const base = path.includes('lessons') ? ROUTES.lessons : path.includes('lands') ? ROUTES.lands : path;
       router.push(`${base}?id=${encodeURIComponent(params.id)}` as any);
     } else {
-      router.push({ pathname: path as any, params });
+      // Sin params: navigate para cambiar de (main) a (subtabs) correctamente
+      router.navigate(path as any);
     }
   }, [router]);
 
@@ -380,7 +401,7 @@ const CollectionScreen = memo(({
     },
     sectionTitle: {
       fontSize: 20,
-      fontFamily: FONTS.bold,
+      fontFamily: FONTS.title,
       marginVertical: 16,
       paddingHorizontal: 16,
     },
@@ -389,7 +410,7 @@ const CollectionScreen = memo(({
     },
     viewAllText: {
       fontSize: 16,
-      fontFamily: FONTS.bold,
+      fontFamily: FONTS.title,
     },
     collectionGrid: {
       flexDirection: 'row' as const,
@@ -415,7 +436,7 @@ const CollectionScreen = memo(({
       marginTop: 8,
     },
     emptyFoldersText: {
-      fontFamily: FONTS.regular,
+      fontFamily: FONTS.body,
       fontSize: 16,
       color: '#8E8E93',
       textAlign: 'center' as const,
@@ -441,7 +462,7 @@ const CollectionScreen = memo(({
     createButtonText: {
       color: 'white',
       fontSize: 40,
-      fontFamily: FONTS.bold,
+      fontFamily: FONTS.title,
     },
     modalContainer: {
       padding: 20,
@@ -452,7 +473,7 @@ const CollectionScreen = memo(({
     modalTitle: {
       fontSize: 20,
       textAlign: 'center' as const,
-      fontFamily: FONTS.bold,
+      fontFamily: FONTS.title,
       marginBottom: 20,
     },
     modalOption: {
@@ -464,7 +485,7 @@ const CollectionScreen = memo(({
     modalOptionText: {
       color: 'white',
       fontSize: 16,
-      fontFamily: FONTS.bold,
+      fontFamily: FONTS.title,
     },
     allCollectionsModal: {
       margin: 20,
@@ -499,18 +520,37 @@ const CollectionScreen = memo(({
     },
     collectionListItemTitle: {
       fontSize: 16,
-      fontFamily: FONTS.bold,
+      fontFamily: FONTS.title,
       marginBottom: 4,
     },
     collectionListItemDate: {
       fontSize: 14,
-      fontFamily: FONTS.regular,
+      fontFamily: FONTS.body,
     },
     collectionListItemFlag: {
       width: 24,
       height: 24,
       borderRadius: 3,
-    }
+    },
+    createOptionsOverlayFixed: {
+      position: 'absolute' as const,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 99999,
+      elevation: 99999,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      padding: 20,
+    },
+    createOptionsCard: {
+      width: '100%' as const,
+      maxWidth: 320,
+      padding: 24,
+      borderRadius: 14,
+      borderWidth: 2,
+    },
   }), [theme.colors.background]);
 
   // Memoize fetchCollections callback
@@ -546,7 +586,48 @@ const CollectionScreen = memo(({
 
   if (loading) return <LoadingIndicator />;
   if (error) return <ErrorDisplay message={error} />;
-  if (collections.length === 0) return <EmptyState onCreatePress={() => setCreateOptionsVisible(true)} />;
+  if (collections.length === 0) {
+    return (
+      <View style={styles.screenContainer}>
+        <EmptyState onCreatePress={() => setCreateOptionsVisible(true)} />
+        {createOptionsVisible && (
+          <View style={styles.createOptionsOverlayFixed} pointerEvents="box-none">
+            <TouchableOpacity
+              style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)' }]}
+              activeOpacity={1}
+              onPress={handleCreateOptionsClose}
+            />
+            <View
+              style={[
+                styles.createOptionsCard,
+                { backgroundColor: theme.colors.card, borderColor: theme.colors.border },
+              ]}
+            >
+              <Text style={[styles.modalTitle, { color: theme.colors.text }]}>¿Qué quieres crear?</Text>
+              <TouchableOpacity
+                style={[styles.modalOption, { backgroundColor: theme.colors.primary }]}
+                onPress={() => {
+                  handleCreateOptionsClose();
+                  requestAnimationFrame(() => handleNavigation(ROUTES.edit));
+                }}
+              >
+                <Text style={styles.modalOptionText}>Nueva Colección</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalOption, { backgroundColor: theme.colors.primary }]}
+                onPress={() => {
+                  handleCreateOptionsClose();
+                  requestAnimationFrame(() => handleNavigation(ROUTES.manage));
+                }}
+              >
+                <Text style={styles.modalOptionText}>Nueva Carpeta</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      </View>
+    );
+  }
 
   return (
     <View style={styles.screenContainer}>
@@ -580,43 +661,61 @@ const CollectionScreen = memo(({
       </ScrollView>
       
       <TouchableOpacity 
-        style={[styles.floatingCreateButton, { backgroundColor: theme.colors.primary }]}
+        style={[
+          styles.floatingCreateButton,
+          {
+            backgroundColor: theme.colors.primary,
+            shadowColor: theme.colors.primary,
+            shadowOpacity: 0.55,
+            shadowRadius: 14,
+            elevation: 14,
+          },
+        ]}
         onPress={() => setCreateOptionsVisible(true)}
         activeOpacity={0.8}
       >
         <Text style={styles.createButtonText}>+</Text>
       </TouchableOpacity>
 
-      <Portal>
-        <Modal
-          visible={createOptionsVisible}
-          onDismiss={handleCreateOptionsClose}
-          contentContainerStyle={[styles.modalContainer, { 
-            backgroundColor: theme.colors.card,
-            borderColor: theme.colors.border 
-          }]}
-        >
-          <Text style={[styles.modalTitle, { color: theme.colors.text }]}>¿Qué quieres crear?</Text>
-          <TouchableOpacity 
-            style={[styles.modalOption, { backgroundColor: theme.colors.primary }]}
-            onPress={() => {
-              handleCreateOptionsClose();
-              handleNavigation('/(subtabs)/edit');
-            }}
+      {/* Selector Nueva Colección / Nueva Carpeta: overlay con zIndex alto para web y móvil */}
+      {createOptionsVisible && (
+        <View style={styles.createOptionsOverlayFixed} pointerEvents="box-none">
+          <TouchableOpacity
+            style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)' }]}
+            activeOpacity={1}
+            onPress={handleCreateOptionsClose}
+          />
+          <View
+            style={[
+              styles.createOptionsCard,
+              {
+                backgroundColor: theme.colors.card,
+                borderColor: theme.colors.border,
+              },
+            ]}
           >
-            <Text style={styles.modalOptionText}>Nueva Colección</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.modalOption, { backgroundColor: theme.colors.primary }]}
-            onPress={() => {
-              handleCreateOptionsClose();
-              handleNavigation('/(subtabs)/manage');
-            }}
-          >
-            <Text style={styles.modalOptionText}>Nueva Carpeta</Text>
-          </TouchableOpacity>
-        </Modal>
-      </Portal>
+            <Text style={[styles.modalTitle, { color: theme.colors.text }]}>¿Qué quieres crear?</Text>
+            <TouchableOpacity
+              style={[styles.modalOption, { backgroundColor: theme.colors.primary }]}
+              onPress={() => {
+                handleCreateOptionsClose();
+                requestAnimationFrame(() => handleNavigation(ROUTES.edit));
+              }}
+            >
+              <Text style={styles.modalOptionText}>Nueva Colección</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modalOption, { backgroundColor: theme.colors.primary }]}
+              onPress={() => {
+                handleCreateOptionsClose();
+                requestAnimationFrame(() => handleNavigation(ROUTES.manage));
+              }}
+            >
+              <Text style={styles.modalOptionText}>Nueva Carpeta</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
 
       <Portal>
         <Modal
@@ -769,7 +868,7 @@ const LoadingScreen = memo(({ searchQuery }: { searchQuery: string }) => {
 
   return (
     <View style={[styles.loadingScreen, { backgroundColor: theme.colors.background }]}>
-      <ActivityIndicator size="large" color="#1CB0F6" />
+      <ActivityIndicator size="large" color={theme.colors.primary} />
       <Text style={[styles.loadingText, { color: theme.colors.text }]}>
         Zappy está pensando en tu colección...
       </Text>
@@ -1016,7 +1115,6 @@ const SearchScreen = () => {
 // Main Home Component
 const Home = memo(() => {
   const router = useRouter();
-  const [loaded] = useFonts(FONT_ASSETS);
   const { width } = useWindowDimensions();
 
   // Memoize initial state values
@@ -1074,10 +1172,6 @@ const Home = memo(() => {
     flex: 1,
   }), []);
 
-  if (!loaded) {
-    return null;
-  }
-
   return (
     <View style={containerStyle}>
       <TabBar {...tabBarProps} />
@@ -1113,7 +1207,7 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontSize: 18,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   indicator: {
     position: 'absolute',
@@ -1187,7 +1281,7 @@ const styles = StyleSheet.create({
   moreFlagsText: {
     color: '#FFFFFF',
     fontSize: 12,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   titleOverlay: {
     position: 'absolute',
@@ -1201,12 +1295,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontSize: 16,
-    fontWeight: '500',
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   sectionTitle: { 
     fontSize: 20,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     marginVertical: 16,
     paddingHorizontal: 16,
   },
@@ -1231,13 +1324,13 @@ const styles = StyleSheet.create({
   folderName: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     marginBottom: 8,
   },
   folderInfo: {
     color: '#8F9EA8',
     fontSize: 14,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
   },
   folderIconContainer: {
     width: 80,
@@ -1251,13 +1344,13 @@ const styles = StyleSheet.create({
   folderTitle: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     textAlign: 'center'
   },
   folderSubtitle: {
     color: '#8E8E93',
     fontSize: 14,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     textAlign: 'center',
     marginTop: 4
   },
@@ -1271,7 +1364,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   emptyFoldersText: {
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     fontSize: 16,
     color: '#8E8E93',
     textAlign: 'center' as const,
@@ -1289,23 +1382,26 @@ const styles = StyleSheet.create({
     fontSize: 24,
     textAlign: 'center',
     marginBottom: 12,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
+    width: '100%',
   },
   emptySubtitle: {
     color: '#8E8E93',
-    fontSize: 16,
+    fontSize: 19,
     textAlign: 'center',
     marginBottom: 20,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
+    width: '100%',
+    lineHeight: 26,
   },
   createButton: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#1CB0F6',
+    backgroundColor: '#FF8C00', // fallback (se overridea con theme.colors.primary)
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#1999d6',
+    shadowColor: '#FF8C00', // fallback (se overridea con theme.colors.primary)
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 0,
@@ -1330,7 +1426,7 @@ const styles = StyleSheet.create({
   createButtonText: {
     color: 'white',
     fontSize: 40,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   topicsSection: {
     paddingVertical: 16,
@@ -1358,7 +1454,7 @@ const styles = StyleSheet.create({
   topicText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     textAlign: 'center',
   },
   searchContainer: {
@@ -1377,7 +1473,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
   },
   loadingContainer: {
     flex: 1,
@@ -1395,8 +1491,27 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     textAlign: 'center',
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     padding: 20
+  },
+  createOptionsOverlayFixed: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 99999,
+    elevation: 99999,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  createOptionsCard: {
+    width: '100%',
+    maxWidth: 320,
+    padding: 24,
+    borderRadius: 14,
+    borderWidth: 2,
   },
   modalContainer: {
     padding: 20,
@@ -1407,7 +1522,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     textAlign: 'center' as const,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     marginBottom: 20,
   },
   modalOption: {
@@ -1419,28 +1534,28 @@ const styles = StyleSheet.create({
   modalOptionText: {
     color: 'white',
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   title: {
     fontSize: 24,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     color: '#FFFFFF',
     marginLeft: 20,
   },
   collectionTitle: {
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     color: '#FFFFFF',
     marginBottom: 8,
   },
   collectionLanguage: {
     fontSize: 14,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     color: '#8F9EA6',
   },
   topicTitle: {
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     color: '#FFFFFF',
     marginTop: 8,
   },
@@ -1456,7 +1571,7 @@ const styles = StyleSheet.create({
   },
   viewAllText: {
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   allCollectionsModal: {
     margin: 20,
@@ -1491,12 +1606,12 @@ const styles = StyleSheet.create({
   },
   collectionListItemTitle: {
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     marginBottom: 4,
   },
   collectionListItemDate: {
     fontSize: 14,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
   },
   collectionListItemFlag: {
     width: 24,
@@ -1520,7 +1635,7 @@ const styles = StyleSheet.create({
   },
   filterText: {
     fontSize: 14,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
   },
   noResultsContainer: {
     flex: 1,
@@ -1540,7 +1655,7 @@ const styles = StyleSheet.create({
   zappyButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   loadingScreen: {
     flex: 1,
@@ -1551,13 +1666,13 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 20,
     fontSize: 18,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     textAlign: 'center',
   },
   loadingSubtext: {
     marginTop: 8,
     fontSize: 14,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     textAlign: 'center',
   },
 });

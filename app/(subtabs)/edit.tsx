@@ -3,7 +3,6 @@ import { View, Text, Animated, TextInput, TouchableOpacity, StyleSheet, ScrollVi
 import { Portal, Modal, Chip } from 'react-native-paper';
 import { generateFlashCards, generateCollectionInfo } from '../../src/services/ai/integration/openrouter';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useFonts } from 'expo-font';
 import { supabase } from '../../src/services/supabase';
 import { Image } from 'react-native';
 import { FONTS } from '../../src/services/fonts';
@@ -26,7 +25,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 24,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     marginLeft: 16,
   },
   closeButton: {
@@ -71,7 +70,7 @@ const styles = StyleSheet.create({
   uploadText: {
     color: '#FFFFFF',
     textAlign: 'center',
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     fontSize: 14,
   },
   loadingContainer: {
@@ -83,7 +82,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     color: '#FFFFFF',
-    fontFamily: FONTS.regular
+    fontFamily: FONTS.body
   },
   modalContainer: {
     backgroundColor: '#202f36',
@@ -109,14 +108,14 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     color: '#FFFFFF',
     marginBottom: 10,
     textAlign: 'center'
   },
   modalMessage: {
     fontSize: 16,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     color: '#FFFFFF',
     marginBottom: 20,
     textAlign: 'center'
@@ -149,7 +148,7 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.bold
+    fontFamily: FONTS.title
   },
   progressBarContainer: {
     width: '100%',
@@ -174,7 +173,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     marginBottom: 16,
   },
   chipContainer: {
@@ -196,7 +195,7 @@ const styles = StyleSheet.create({
   },
   languageSelectorText: {
     marginLeft: 8,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     color: '#FFFFFF',
   },
   cardContainer: {
@@ -213,7 +212,7 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 18,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   deleteButton: {
     padding: 8,
@@ -221,24 +220,24 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     color: '#FF4B4B',
     fontSize: 16,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
   },
   input: {
     borderRadius: 10,
     padding: 12,
     fontSize: 16,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     marginBottom: 12,
   },
   label: {
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     marginBottom: 8,
   },
   errorText: {
     color: '#FF4B4B',
     fontSize: 14,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     marginTop: 4,
   },
   toggleContainer: {
@@ -254,7 +253,7 @@ const styles = StyleSheet.create({
   toggleLabel: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
   },
   cardsSection: {
     backgroundColor: '#131f24',
@@ -277,7 +276,7 @@ const styles = StyleSheet.create({
   tabText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   activeTabText: {
     color: '#1CB0F6',
@@ -306,7 +305,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 16,
     color: '#FFFFFF',
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     fontSize: 16,
     minHeight: 120,
     textAlignVertical: 'top',
@@ -327,7 +326,7 @@ const styles = StyleSheet.create({
   },
   generateButtonText: {
     color: '#FFFFFF',
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     fontSize: 16
   },
   addButton: {
@@ -343,7 +342,7 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: '#1CB0F6',
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   buttonContainer: {
     marginTop: 20,
@@ -363,7 +362,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.bold
+    fontFamily: FONTS.title
   },
   inputGroup: {
     marginBottom: 16,
@@ -379,7 +378,7 @@ const styles = StyleSheet.create({
   cardSideLabel: {
     color: '#FFFFFF',
     fontSize: 12,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     marginBottom: 4,
     textTransform: 'uppercase',
   },
@@ -389,7 +388,7 @@ const styles = StyleSheet.create({
     padding: 12,
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     textAlignVertical: 'top',
     minHeight: 40,
     maxHeight: 200,
@@ -475,11 +474,6 @@ export default function EditScreen() {
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [showTopicModal, setShowTopicModal] = useState(false);
-
-  const [loaded] = useFonts({
-    'DINNextRoundedLTPro-Bold': require('../../assets/fonts/DINNextRoundedLTPro-Bold.otf'),
-    'DINNextRoundedLTPro-Regular': require('../../assets/fonts/DINNextRoundedLTPro-Regular.otf'),
-  });
 
   const translations = {
     en: {
@@ -944,7 +938,17 @@ export default function EditScreen() {
                   key={topic.id}
                   selected={selectedTopics.includes(topic.id)}
                   onPress={() => handleTopicToggle(topic.id)}
-                  style={styles.chip}
+                  style={[
+                    styles.chip,
+                    {
+                      backgroundColor: selectedTopics.includes(topic.id) ? theme.colors.primary : theme.colors.card,
+                      borderColor: theme.colors.border,
+                    },
+                  ]}
+                  textStyle={{
+                    color: theme.colors.text,
+                    fontFamily: FONTS.body,
+                  }}
                 >
                   {topic.name}
                 </Chip>
@@ -960,7 +964,17 @@ export default function EditScreen() {
                   key={language.code}
                   selected={selectedLanguages.includes(language.code)}
                   onPress={() => handleLanguageToggle(language.code)}
-                  style={styles.chip}
+                  style={[
+                    styles.chip,
+                    {
+                      backgroundColor: selectedLanguages.includes(language.code) ? theme.colors.primary : theme.colors.card,
+                      borderColor: theme.colors.border,
+                    },
+                  ]}
+                  textStyle={{
+                    color: theme.colors.text,
+                    fontFamily: FONTS.body,
+                  }}
                 >
                   {language.name}
                 </Chip>
@@ -995,8 +1009,6 @@ export default function EditScreen() {
       </Text>
     </TouchableOpacity>
   );
-
-  if (!loaded) return null;
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -1380,12 +1392,15 @@ export default function EditScreen() {
   );
 }
 
-const FormSection = ({ label, content }: { label: string, content: React.ReactNode }) => (
-  <View style={styles.inputGroup}>
-    <Text style={styles.label}>{label}</Text>
-    {content}
-  </View>
-);
+const FormSection = ({ label, content }: { label: string, content: React.ReactNode }) => {
+  const { theme } = useTheme();
+  return (
+    <View style={styles.inputGroup}>
+      <Text style={[styles.label, { color: theme.colors.text }]}>{label}</Text>
+      {content}
+    </View>
+  );
+};
 
 // Modified CardItem component with side-by-side layout
 const CardItem = ({ 

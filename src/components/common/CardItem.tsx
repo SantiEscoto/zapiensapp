@@ -49,7 +49,7 @@ export default function CardItem({ index, card, onChangeField, onDelete }: CardI
 
 const styles = StyleSheet.create({
   indexText: {
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     fontSize: 14,
     color: '#8E8E93',
     marginRight: 12,
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     padding: 16
   },
   input: {
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     fontSize: 16,
     color: '#FFFFFF',
     padding: 0,
@@ -97,6 +97,6 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     color: '#8E8E93',
     fontSize: 18,
-    fontFamily: FONTS.regular
+    fontFamily: FONTS.body
   }
 });

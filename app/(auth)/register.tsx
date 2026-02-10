@@ -1,15 +1,12 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Platform } from "react-native";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { supabase } from '../../src/services/supabase';
 import { useRouter } from 'expo-router';
-import { useFonts } from 'expo-font';
-import { FONTS, FONT_ASSETS } from '../../src/services/fonts';
+import { FONTS } from '../../src/services/fonts';
 
 export default function Register() {
   const router = useRouter();
-  const [loaded] = useFonts(FONT_ASSETS);
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -19,21 +16,23 @@ export default function Register() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const isFormValid = email.length > 0 && password.length > 0 && confirmPassword.length > 0;
 
-  if (!loaded) {
-    return null;
-  }
-
   async function signInWithGoogle() {
     setLoading(true);
     setError("");
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-    });
-
-    if (error) {
-      setError("Error al registrarse con Google");
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        ...(Platform.OS === 'web' && typeof window !== 'undefined' && {
+          options: {
+            redirectTo: `${window.location.origin}/auth/callback`,
+            scopes: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
+          }
+        }),
+      });
+      if (error) setError("Error al registrarse con Google");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function handleRegister() {
@@ -212,7 +211,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
     textAlign: "center",
     marginBottom: 20,
-    fontFamily: "DINNextRoundedLTPro-Bold",
+    fontFamily: FONTS.title,
   },
   inputContainer: {
     marginBottom: 20,
@@ -230,7 +229,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     color: "#FFFFFF",
     fontSize: 16,
-    fontFamily: "DINNextRoundedLTPro-Regular",
+    fontFamily: FONTS.body,
   },
   topInput: {
     borderBottomWidth: 2,
@@ -282,7 +281,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FFFFFF",
     fontSize: 14,
-    fontFamily: "DINNextRoundedLTPro-Bold",
+    fontFamily: FONTS.title,
   },
   buttonTextDisabled: {
     color: "#8E8E93",
@@ -294,7 +293,7 @@ const styles = StyleSheet.create({
   linkText: {
     color: "#1CB0F6",
     fontSize: 14,
-    fontFamily: "DINNextRoundedLTPro-Bold",
+    fontFamily: FONTS.title,
   },
   errorContainer: {
     height: 40,
@@ -304,7 +303,7 @@ const styles = StyleSheet.create({
   error: {
     color: "#FF3B30",
     textAlign: "center",
-    fontFamily: "DINNextRoundedLTPro-Regular",
+    fontFamily: FONTS.body,
   },
   divider: {
     flexDirection: "row",
@@ -345,7 +344,7 @@ const styles = StyleSheet.create({
   socialButtonText: {
     color: "#FFFFFF",
     fontSize: 14,
-    fontFamily: "DINNextRoundedLTPro-Bold",
+    fontFamily: FONTS.title,
   },
   termsContainer: {
     flexDirection: "row",
@@ -361,7 +360,7 @@ const styles = StyleSheet.create({
   termsLink: {
     color: "#1CB0F6",
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: FONTS.bodyBold,
   },
   backButton: {
     position: 'absolute',
@@ -373,6 +372,6 @@ const styles = StyleSheet.create({
   backArrow: {
     color: '#FFFFFF',
     fontSize: 30,
-    fontWeight: 'bold',
+    fontFamily: FONTS.title,
   }
 });

@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { View, ScrollView, Text, TouchableOpacity, StyleSheet, Alert, Animated, PanResponder, Dimensions } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '../../src/services/supabase';
-import { useFonts } from 'expo-font';
 import { FONTS } from '../../src/services/fonts';
 import { updateUserXP } from '../../src/services/xpService';
 
@@ -40,11 +39,6 @@ export default function FlashcardScreen() {
   const swipeAnimation = useRef(new Animated.Value(0)).current;
   const nextCardOpacity = useRef(new Animated.Value(0)).current;
   const nextCardScale = useRef(new Animated.Value(0.9)).current;
-
-  const [loaded] = useFonts({
-    [FONTS.bold]: require('../../assets/fonts/DINNextRoundedLTPro-Bold.otf'),
-    [FONTS.regular]: require('../../assets/fonts/DINNextRoundedLTPro-Regular.otf'),
-  });
 
   const fetchCollection = useCallback(async () => {
     try {
@@ -293,7 +287,7 @@ export default function FlashcardScreen() {
     nextCardOpacity.setValue(0);
   }, [cards, progress, swipeAnimation, flipAnimation, nextCardOpacity]);
 
-  if (!loaded || loading) {
+  if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <Text style={styles.loadingText}>Loading flashcards...</Text>
@@ -319,10 +313,7 @@ export default function FlashcardScreen() {
         
         <TouchableOpacity 
           style={[styles.button, styles.buttonSecondary]}
-          onPress={() => router.push({
-            pathname: '/(subtabs)/lessons',
-            params: { id }
-          })}
+          onPress={() => router.back()}
         >
           <Text style={[styles.buttonText, styles.buttonTextSecondary]}>Practicar con el modo aprender</Text>
         </TouchableOpacity>
@@ -424,7 +415,7 @@ const styles = StyleSheet.create({
   loadingText: {
     color: '#FFFFFF',
     fontSize: 18,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   header: {
     flexDirection: 'row',
@@ -440,12 +431,12 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: '#FFFFFF',
     fontSize: 24,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   progress: {
     color: '#FFFFFF',
     fontSize: 18,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   cardContainer: {
     flex: 1,
@@ -483,7 +474,7 @@ const styles = StyleSheet.create({
   cardText: {
     color: '#FFFFFF',
     fontSize: 24,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     textAlign: 'center',
   },
   buttonsContainer: {
@@ -507,7 +498,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   buttonTextSecondary: {
     color: '#1CB0F6',
@@ -546,7 +537,7 @@ const styles = StyleSheet.create({
   resultTitle: {
     color: '#FFFFFF',
     fontSize: 32,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     textAlign: 'center',
     marginTop: 60,
     marginBottom: 10
@@ -554,7 +545,7 @@ const styles = StyleSheet.create({
   resultScore: {
     color: '#8E8E93',
     fontSize: 18,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     textAlign: 'center',
     marginBottom: 30
   },
@@ -573,12 +564,12 @@ const styles = StyleSheet.create({
   scoreText: {
     color: '#FFFFFF',
     fontSize: 48,
-    fontFamily: FONTS.bold
+    fontFamily: FONTS.title
   },
   scoreSubtext: {
     color: '#8E8E93',
     fontSize: 16,
-    fontFamily: FONTS.regular
+    fontFamily: FONTS.body
   },
  
   reviewContainer: {
@@ -592,7 +583,7 @@ const styles = StyleSheet.create({
   reviewTitle: {
     color: '#FFFFFF',
     fontSize: 20,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     marginBottom: 16,
   },
   reviewItem: {
@@ -617,12 +608,12 @@ const styles = StyleSheet.create({
   reviewLabel: {
     color: '#8E8E93',
     fontSize: 14,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     marginBottom: 4,
   },
   reviewText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
   }
 });

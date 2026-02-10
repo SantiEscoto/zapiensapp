@@ -2,6 +2,7 @@ import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import { Text, Card, ActivityIndicator } from 'react-native-paper';
 import { useState, useEffect } from 'react';
 import { supabase } from '../../services/supabase';
+import { FONTS } from '../../services/fonts';
 
 interface Collection {
   id: string;
@@ -49,7 +50,7 @@ export default function CollectionsTab() {
   if (collections.length === 0) {
     return (
       <View style={styles.emptyContainer}>
-        <Text variant="titleMedium">No collections yet</Text>
+        <Text variant="titleMedium" style={styles.emptyTitle}>No collections yet</Text>
         <Text variant="bodyMedium" style={styles.emptyText}>
           Create your first collection to get started
         </Text>
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
   title: {
     textAlign: 'center',
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: FONTS.title,
   },
   titleOverlay: {
     position: 'absolute',
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: FONTS.title,
   },
   cardContent: {
     paddingVertical: 12,
@@ -148,10 +149,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 24,
   },
+  emptyTitle: {
+    fontFamily: FONTS.title,
+  },
   emptyText: {
     textAlign: 'center',
     marginTop: 6,
     opacity: 0.7,
+    fontFamily: FONTS.body,
   },
   card: {
     marginVertical: 8,

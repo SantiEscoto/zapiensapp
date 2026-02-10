@@ -2,8 +2,8 @@ import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, Alert, Animated } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '../../src/services/supabase';
-import { useFonts } from 'expo-font';
 import { updateUserXP } from '../../src/services/xpService';
+import { FONTS } from '../../src/services/fonts';
 
 interface Flashcard {
   id: string;
@@ -53,11 +53,6 @@ export default function MatchScreen() {
   const availablePositions = useRef<{[key in 'term' | 'definition']: number[]}>({ term: [], definition: [] });
   const isProcessingMatch = useRef<boolean>(false);
   const [usedMatchIds, setUsedMatchIds] = useState(new Set<string>());
-
-  const [loaded] = useFonts({
-    'DINNextRoundedLTPro-Bold': require('../../assets/fonts/DINNextRoundedLTPro-Bold.otf'),
-    'DINNextRoundedLTPro-Regular': require('../../assets/fonts/DINNextRoundedLTPro-Regular.otf'),
-  });
 
   const { termCards, definitionCards, matchedCount } = useMemo(() => {
     const termCards = visibleCards
@@ -533,10 +528,7 @@ export default function MatchScreen() {
           </TouchableOpacity>
           <TouchableOpacity 
             style={[styles.button, styles.buttonSecondary]}
-            onPress={() => router.push({
-              pathname: '/(subtabs)/lessons',
-              params: { id: id }
-            })}
+            onPress={() => router.back()}
           >
             <Text style={[styles.buttonText, styles.buttonTextSecondary]}>Practicar con el modo aprender</Text>
           </TouchableOpacity>
@@ -661,7 +653,7 @@ const styles = StyleSheet.create({
   loadingText: {
     color: '#FFFFFF',
     fontSize: 18,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -677,7 +669,7 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: '#FFFFFF',
     fontSize: 24,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
   },
   progressBar: {
     flex: 1,
@@ -694,13 +686,13 @@ const styles = StyleSheet.create({
   timerText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
     marginLeft: 15,
   },
   instructionText: {
     color: '#FFFFFF',
     fontSize: 20,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
     textAlign: 'left',
     marginBottom: 40,
     paddingHorizontal: 20,
@@ -745,20 +737,20 @@ const styles = StyleSheet.create({
   cardText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: 'DINNextRoundedLTPro-Regular',
+    fontFamily: FONTS.body,
     textAlign: 'center',
   },
   resultTitle: {
     color: '#FFFFFF',
     fontSize: 32,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
     textAlign: 'center',
     marginBottom: 10,
   },
   resultScore: {
     color: '#8E8E93',
     fontSize: 18,
-    fontFamily: 'DINNextRoundedLTPro-Regular',
+    fontFamily: FONTS.body,
     textAlign: 'center',
     marginBottom: 30,
   },
@@ -775,7 +767,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 18,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
     textAlign: 'center',
   },
   buttonSecondary: {
@@ -801,6 +793,6 @@ const styles = StyleSheet.create({
   scoreText: {
     color: '#FFFFFF',
     fontSize: 48,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
   }
 });

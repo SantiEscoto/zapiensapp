@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, StyleSheet, Animated, Dimensions, Easing 
 import Svg, { Path } from 'react-native-svg';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '../../src/services/supabase';
-import { useFonts } from 'expo-font';
 import { FONTS } from '../../src/services/fonts';
 import { updateUserXP } from '../../src/services/xpService';
 import { Portal, Modal } from 'react-native-paper';
@@ -59,11 +58,6 @@ export default function SpinningScreen() {
   const [notificationMessage, setNotificationMessage] = useState('');
   const spinValue = useRef(new Animated.Value(0)).current;
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const [loaded] = useFonts({
-    [FONTS.bold]: require('../../assets/fonts/DINNextRoundedLTPro-Bold.otf'),
-    [FONTS.regular]: require('../../assets/fonts/DINNextRoundedLTPro-Regular.otf'),
-  });
 
   // Memoized shuffle function
   const shuffle = useCallback(<T,>(array: T[]): T[] => {
@@ -305,11 +299,8 @@ export default function SpinningScreen() {
   }, []);
 
   const navigateToLessons = useCallback(() => {
-    router.push({
-      pathname: '/(subtabs)/lessons',
-      params: { id }
-    });
-  }, [router, id]);
+    router.back();
+  }, [router]);
 
   // Award XP when all questions are completed
   useEffect(() => {
@@ -329,7 +320,7 @@ export default function SpinningScreen() {
   }, [remainingCards.length]);
 
   // Handle loading state
-  if (!loaded || loading) {
+  if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <Text style={styles.loadingText}>Loading wheel...</Text>
@@ -426,7 +417,7 @@ const styles = StyleSheet.create({
   loadingText: {
     color: '#FFFFFF',
     fontSize: 18,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   closeButton: {
     position: 'absolute',
@@ -438,7 +429,7 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: '#FFFFFF',
     fontSize: 24,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   wheelContainer: {
     flex: 1,
@@ -485,7 +476,7 @@ const styles = StyleSheet.create({
   spinButtonText: {
     color: '#FFFFFF',
     fontSize: 22,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     letterSpacing: 1,
   },
   pointer: {
@@ -514,14 +505,14 @@ const styles = StyleSheet.create({
   timerText: {
     color: '#8E8E93',
     fontSize: 16,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     textAlign: 'center',
     marginBottom: 10,
   },
   questionText: {
     color: '#FFFFFF',
     fontSize: 20,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -539,12 +530,12 @@ const styles = StyleSheet.create({
   optionText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
   },
   resultTitle: {
     color: '#FFFFFF',
     fontSize: 32,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     textAlign: 'center',
     marginTop: 60,
     marginBottom: 10,
@@ -552,14 +543,14 @@ const styles = StyleSheet.create({
   resultText: {
     color: '#8E8E93',
     fontSize: 18,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     textAlign: 'center',
     marginBottom: 30,
   },
   xpText: {
     color: '#58CC02',
     fontSize: 24,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     textAlign: 'center',
     marginBottom: 30,
   },
@@ -573,7 +564,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   notificationModal: {
     backgroundColor: '#202f36',
@@ -587,7 +578,7 @@ const styles = StyleSheet.create({
   notificationText: {
     color: '#FFFFFF',
     fontSize: 18,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     textAlign: 'center',
   }
 });

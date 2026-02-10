@@ -1,32 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createTheme } from '../services/theme';
-
-type ThemeType = 'light' | 'dark';
-type ColorTheme = 'default' | 'green' | 'purple' | 'orange';
-
-const themeColors = {
-  default: '#1CB0F6',
-  green: '#58CC02',
-  purple: '#8549BA',
-  orange: '#FF9600'
-};
-
-interface ThemeColors {
-  background: string;
-  card: string;
-  text: string;
-  textSecondary: string;
-  border: string;
-  primary: string;
-  error: string;
-}
-
-interface Theme {
-  type: ThemeType;
-  colors: ThemeColors;
-  colorTheme: ColorTheme;
-}
+import { createTheme, type ThemeType, type ColorTheme, type Theme } from '../services/theme';
 
 interface ThemeContextType {
   theme: Theme;
@@ -34,10 +8,25 @@ interface ThemeContextType {
   setColorTheme: (color: ColorTheme) => void;
 }
 
+/** Migra temas antiguos (default/green/purple/orange) a los 6 nuevos */
+const LEGACY_COLOR_MAP: Record<string, ColorTheme> = {
+  default: 'ocean',
+  green: 'forest',
+  purple: 'royal',
+  orange: 'citrus',
+};
+
+function normalizeColorTheme(saved: string | null): ColorTheme {
+  const valid: ColorTheme[] = ['ocean', 'royal', 'forest', 'citrus', 'cherry', 'candy'];
+  if (saved && valid.includes(saved as ColorTheme)) return saved as ColorTheme;
+  if (saved && LEGACY_COLOR_MAP[saved]) return LEGACY_COLOR_MAP[saved];
+  return 'ocean';
+}
+
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(createTheme('dark', 'default'));
+  const [theme, setTheme] = useState<Theme>(createTheme('dark', 'ocean'));
 
   useEffect(() => {
     loadTheme();
@@ -51,7 +40,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       ]);
 
       const themeType = (savedThemeType || 'dark') as ThemeType;
-      const colorTheme = (savedColorTheme || 'default') as ColorTheme;
+      const colorTheme = normalizeColorTheme(savedColorTheme);
       
       setTheme(createTheme(themeType, colorTheme));
     } catch (error) {

@@ -2,12 +2,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Switch, ScrollView, TextInput, ActivityIndicator, Image } from 'react-native';
 import { supabase } from '../../src/services/supabase';
 import { useRouter } from 'expo-router';
-import { useFonts } from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { Portal, Modal } from 'react-native-paper';
-import { FONTS, FONT_ASSETS } from '../../src/services/fonts';
+import { FONTS } from '../../src/services/fonts';
 import { useTheme } from '../../src/context/ThemeContext';
-import { createTheme } from '../../src/services';
+import { createTheme, themeColors, type ColorTheme } from '../../src/services';
 
 // Add interfaces at the top of the file
 interface Errors {
@@ -22,8 +21,6 @@ interface Errors {
 export default function Settings() {
   const router = useRouter();
   const { theme, toggleTheme, setColorTheme } = useTheme();
-  const [loaded] = useFonts(FONT_ASSETS);
-
   const [selectedTheme, setSelectedTheme] = useState('default');
   const [tempTheme, setTempTheme] = useState('default');
   const [tempDarkMode, setTempDarkMode] = useState(false);
@@ -52,9 +49,11 @@ export default function Settings() {
     confirmPassword: ''
   });
 
-  const [tempColorTheme, setTempColorTheme] = useState<'default' | 'green' | 'purple' | 'orange'>(theme.colorTheme);
+  const [tempColorTheme, setTempColorTheme] = useState<ColorTheme>(theme.colorTheme);
   const [themePortalVisible, setThemePortalVisible] = useState(false);
   const [isApplyingChanges, setIsApplyingChanges] = useState(false);
+  const [deleteAccountConfirmVisible, setDeleteAccountConfirmVisible] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   // Crear un tema temporal para previsualización usando useMemo
   const previewTheme = useMemo(() => createTheme(
@@ -74,10 +73,6 @@ export default function Settings() {
     }
   }, [themePortalVisible, theme]);
 
-  if (!loaded) {
-    return null;
-  }
-
   const handleGoBack = () => {
     router.replace('/(main)/profile');
   };
@@ -93,7 +88,7 @@ export default function Settings() {
     }
   };
 
-  const handleColorChange = async (color: 'default' | 'green' | 'purple' | 'orange') => {
+  const handleColorChange = async (color: ColorTheme) => {
     setTempColorTheme(color);
     if (color !== theme.colorTheme) {
       await setColorTheme(color);
@@ -102,6 +97,34 @@ export default function Settings() {
 
   const applyThemeChanges = () => {
     setThemePortalVisible(false);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      router.replace('/(auth)/welcome');
+    } catch (e) {
+      console.error('Error al cerrar sesión:', e);
+      showPortal('Error', 'No se pudo cerrar sesión');
+    }
+  };
+
+  const showDeleteAccountConfirm = () => setDeleteAccountConfirmVisible(true);
+  const hideDeleteAccountConfirm = () => setDeleteAccountConfirmVisible(false);
+
+  const handleDeleteAccountConfirm = async () => {
+    setIsDeletingAccount(true);
+    try {
+      await supabase.auth.signOut();
+      setProfilePortalVisible(false);
+      setDeleteAccountConfirmVisible(false);
+      router.replace('/(auth)/welcome');
+    } catch (e) {
+      console.error('Error al eliminar cuenta:', e);
+      showPortal('Error', 'No se pudo completar la acción');
+    } finally {
+      setIsDeletingAccount(false);
+    }
   };
 
   const navigateToPrivacyPolicy = () => {
@@ -309,6 +332,14 @@ export default function Settings() {
             Versión 1.0.0
           </Text>
         </View>
+
+        <TouchableOpacity
+          style={[styles.logoutButton, { backgroundColor: theme.colors.error ?? '#FF4B4B' }]}
+          onPress={handleLogout}
+        >
+          <Ionicons name="log-out-outline" size={22} color="#FFFFFF" />
+          <Text style={styles.logoutButtonText}>Cerrar sesión</Text>
+        </TouchableOpacity>
       </ScrollView>
 
       {/* Portal para mensajes generales */}
@@ -492,7 +523,55 @@ export default function Settings() {
                 <Text style={styles.updateButtonText}>Actualizar Perfil</Text>
               )}
             </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.deleteAccountButton, { borderColor: theme.colors.error ?? '#FF4B4B' }]}
+              onPress={showDeleteAccountConfirm}
+            >
+              <Ionicons name="trash-outline" size={20} color={theme.colors.error ?? '#FF4B4B'} />
+              <Text style={[styles.deleteAccountButtonText, { color: theme.colors.error ?? '#FF4B4B' }]}>
+                Eliminar cuenta
+              </Text>
+            </TouchableOpacity>
           </ScrollView>
+        </Modal>
+      </Portal>
+
+      {/* Modal de confirmación para eliminar cuenta */}
+      <Portal>
+        <Modal
+          visible={deleteAccountConfirmVisible}
+          onDismiss={hideDeleteAccountConfirm}
+          contentContainerStyle={[styles.modalContainer, {
+            backgroundColor: theme.colors.card,
+            borderColor: theme.colors.border
+          }]}
+        >
+          <View style={styles.modalContent}>
+            <Text style={[styles.modalTitle, { color: theme.colors.text }]}>Eliminar cuenta</Text>
+            <Text style={[styles.modalMessage, { color: theme.colors.textSecondary }]}>
+              Se borrará toda tu información y tu cuenta de forma permanente. Esta acción no se puede deshacer.{'\n\n'}¿Estás seguro?
+            </Text>
+            <View style={styles.modalButtonsRow}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton, { backgroundColor: theme.colors.border }]}
+                onPress={hideDeleteAccountConfirm}
+              >
+                <Text style={styles.modalButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.confirmButton, { backgroundColor: theme.colors.error ?? '#FF4B4B' }]}
+                onPress={handleDeleteAccountConfirm}
+                disabled={isDeletingAccount}
+              >
+                {isDeletingAccount ? (
+                  <ActivityIndicator color="#FFFFFF" size="small" />
+                ) : (
+                  <Text style={styles.modalButtonText}>Eliminar</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
         </Modal>
       </Portal>
 
@@ -565,38 +644,24 @@ export default function Settings() {
             <View style={styles.themeSection}>
               <Text style={[styles.sectionTitle, { color: previewTheme.colors.text }]}>Color Principal</Text>
               <View style={styles.themeContainer}>
-                <TouchableOpacity 
-                  style={[
-                    styles.colorOption, 
-                    tempColorTheme === 'default' && styles.selectedColor,
-                    { backgroundColor: '#1CB0F6' }
-                  ]}
-                  onPress={() => handleColorChange('default')}
-                />
-                <TouchableOpacity 
-                  style={[
-                    styles.colorOption, 
-                    tempColorTheme === 'green' && styles.selectedColor,
-                    { backgroundColor: '#58CC02' }
-                  ]}
-                  onPress={() => handleColorChange('green')}
-                />
-                <TouchableOpacity 
-                  style={[
-                    styles.colorOption, 
-                    tempColorTheme === 'purple' && styles.selectedColor,
-                    { backgroundColor: '#8549BA' }
-                  ]}
-                  onPress={() => handleColorChange('purple')}
-                />
-                <TouchableOpacity 
-                  style={[
-                    styles.colorOption, 
-                    tempColorTheme === 'orange' && styles.selectedColor,
-                    { backgroundColor: '#FF9600' }
-                  ]}
-                  onPress={() => handleColorChange('orange')}
-                />
+                {(['ocean', 'royal', 'forest', 'citrus', 'cherry', 'candy'] as const).map((key) => (
+                  <TouchableOpacity
+                    key={key}
+                    style={styles.themeColorColumn}
+                    onPress={() => handleColorChange(key)}
+                  >
+                    <View
+                      style={[
+                        styles.colorOption,
+                        tempColorTheme === key && styles.selectedColor,
+                        { backgroundColor: themeColors[key] }
+                      ]}
+                    />
+                    <Text style={[styles.themeLabel, { color: previewTheme.colors.textSecondary }]}>
+                      {({ ocean: 'Ocean', royal: 'Royal', forest: 'Forest', citrus: 'Citrus', cherry: 'Cherry', candy: 'Candy' } as const)[key]}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
               </View>
             </View>
 
@@ -630,20 +695,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalTitle: {
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     fontSize: 20,
     marginBottom: 10,
     color: '#333',
   },
   modalMessage: {
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 20,
     color: '#666',
   },
   modalButton: {
-    backgroundColor: '#1CB0F6',
+    backgroundColor: '#FF8C00', // fallback (normalmente se overridea con theme.colors.*)
     paddingHorizontal: 30,
     paddingVertical: 12,
     borderRadius: 25,
@@ -651,7 +716,7 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   container: {
     flex: 1,
@@ -669,7 +734,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     marginLeft: 10,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   section: {
     marginBottom: 30,
@@ -679,7 +744,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     marginBottom: 20,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   formGroup: {
     marginBottom: 16,
@@ -693,14 +758,14 @@ const styles = StyleSheet.create({
   settingLabel: {
     fontSize: 16,
     marginBottom: 8,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
   },
   input: {
     height: 48,
     borderRadius: 8,
     paddingHorizontal: 16,
     fontSize: 16,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     width: '100%',
   },
   darkInput: {
@@ -721,7 +786,7 @@ const styles = StyleSheet.create({
     color: '#FF3B30',
     fontSize: 14,
     marginTop: 4,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
   },
   updateButton: {
     backgroundColor: '#007AFF',
@@ -736,12 +801,24 @@ const styles = StyleSheet.create({
   updateButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   themeContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     marginTop: 10,
+    gap: 4,
+  },
+  themeColorColumn: {
+    alignItems: 'center',
+    minWidth: 50,
+  },
+  themeLabel: {
+    fontSize: 10,
+    fontFamily: FONTS.body,
+    textAlign: 'center',
+    marginTop: 4,
   },
   themeOption: {
     width: 60,
@@ -766,17 +843,52 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FFFFFF",
     fontSize: 16,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
   },
   versionContainer: {
     alignItems: 'center',
     marginTop: 20,
-    marginBottom: 40,
+    marginBottom: 24,
   },
   versionText: {
     fontSize: 14,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
   },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    padding: 16,
+    borderRadius: 14,
+    marginBottom: 40,
+  },
+  logoutButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily: FONTS.title,
+  },
+  deleteAccountButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 2,
+    marginTop: 24,
+  },
+  deleteAccountButtonText: {
+    fontSize: 16,
+    fontFamily: FONTS.title,
+  },
+  modalButtonsRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 8,
+  },
+  cancelButton: {},
+  confirmButton: {},
   passwordContainer: {
     position: 'relative',
     width: '100%',
@@ -807,12 +919,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   profileModalTitle: {
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     fontSize: 24,
   },
   themeOptionText: {
     fontSize: 16,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     marginRight: 8,
   },
   buttonContent: {
@@ -831,7 +943,7 @@ const styles = StyleSheet.create({
   },
   themeText: {
     fontSize: 16,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     marginRight: 8,
   },
   modalHeader: {
@@ -853,11 +965,11 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   selectedColor: {
-    borderColor: '#666666',
+    borderColor: '#FFFFFF',
     borderWidth: 3,
   },
   applyButton: {
-    backgroundColor: '#1CB0F6',
+    backgroundColor: '#FF8C00', // fallback (se overridea con previewTheme.colors.primary)
     borderRadius: 14,
     padding: 16,
     alignItems: 'center',
@@ -870,7 +982,7 @@ const styles = StyleSheet.create({
   applyButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   themeModesContainer: {
     flexDirection: 'column',
@@ -894,6 +1006,6 @@ const styles = StyleSheet.create({
   },
   themeModeText: {
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
 });

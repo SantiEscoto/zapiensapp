@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Animated } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '../../src/services/supabase';
-import { useFonts } from 'expo-font';
 import { FONTS } from '../../src/services/fonts';
 import { AntDesign } from '@expo/vector-icons';
 import { updateUserXP } from '../../src/services/xpService';
@@ -59,12 +58,6 @@ const CrosswordScreen: React.FC = () => {
   // Animation values
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  // Load custom fonts
-  const [loaded] = useFonts({
-    [FONTS.bold]: require('../../assets/fonts/DINNextRoundedLTPro-Bold.otf'),
-    [FONTS.regular]: require('../../assets/fonts/DINNextRoundedLTPro-Regular.otf'),
-  });
 
   // Fetch data
   const fetchFlashcards = useCallback(async () => {
@@ -736,10 +729,7 @@ const CrosswordScreen: React.FC = () => {
       
       <TouchableOpacity 
         style={[styles.button, styles.buttonSecondary]}
-        onPress={() => router.push({
-          pathname: '/(subtabs)/lessons',
-          params: { id }
-        })}
+        onPress={() => router.back()}
       >
         <Text style={[styles.buttonText, styles.buttonTextSecondary]}>Volver a la lista de lecciones</Text>
       </TouchableOpacity>
@@ -747,7 +737,7 @@ const CrosswordScreen: React.FC = () => {
   ), [handleRestart, router, id]);
 
   // Render loading screen
-  if (!loaded || loading) {
+  if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <Text style={styles.loadingText}>Cargando crucigrama...</Text>
@@ -760,10 +750,7 @@ const CrosswordScreen: React.FC = () => {
     <ScrollView style={styles.container}>
       <TouchableOpacity 
         style={styles.backButton} 
-        onPress={() => router.push({
-          pathname: '/(subtabs)/lessons',
-          params: { id }
-        })}
+        onPress={() => router.back()}
       >
         <AntDesign name="arrow-left" size={24} color="#FFFFFF" />
       </TouchableOpacity>
@@ -812,7 +799,7 @@ const styles = StyleSheet.create({
   loadingText: {
     color: '#FFFFFF',
     fontSize: 18,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   backButton: {
     padding: 10,
@@ -823,7 +810,7 @@ const styles = StyleSheet.create({
   title: {
     color: '#FFFFFF',
     fontSize: 28,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -864,7 +851,7 @@ const styles = StyleSheet.create({
     left: 2,
     fontSize: 8,
     color: '#FFFFFF',
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   cellInput: {
     width: '100%',
@@ -872,12 +859,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#FFFFFF',
     fontSize: 18,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   cluesTitle: {
     color: '#FFFFFF',
     fontSize: 22,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     marginBottom: 15,
   },
   cluesContainer: {
@@ -904,13 +891,13 @@ const styles = StyleSheet.create({
   clueNumber: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     marginRight: 5,
   },
   clueText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     flex: 1,
   },
   resultsContainer: {
@@ -923,13 +910,13 @@ const styles = StyleSheet.create({
   resultsTitle: {
     color: '#FFFFFF',
     fontSize: 32,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     marginBottom: 10,
   },
   resultsSubtitle: {
     color: '#FFFFFF',
     fontSize: 18,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     marginBottom: 40,
   },
   button: {
@@ -949,7 +936,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   buttonTextSecondary: {
     color: '#1CB0F6',

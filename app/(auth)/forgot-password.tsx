@@ -2,23 +2,14 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from "reac
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { supabase } from "../../src/services/supabase";
-import { useFonts } from 'expo-font';
+import { FONTS } from '../../src/services/fonts';
 
 export default function ForgotPassword() {
   const router = useRouter();
-  const [loaded] = useFonts({
-    'DINNextRoundedLTPro-Bold': require('../../assets/fonts/DINNextRoundedLTPro-Bold.otf'),
-    'DINNextRoundedLTPro-Regular': require('../../assets/fonts/DINNextRoundedLTPro-Regular.otf'),
-  });
-
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-
-  if (!loaded) {
-    return null;
-  }
 
   const isFormValid = email.trim() !== "";
 
@@ -128,20 +119,20 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: "#FFFFFF",
     fontSize: 24,
-    fontFamily: "DINNextRoundedLTPro-Bold",
+    fontFamily: FONTS.title,
   },
   title: {
     fontSize: 32,
     color: "#FFFFFF",
     marginTop: 100,
     marginBottom: 10,
-    fontFamily: "DINNextRoundedLTPro-Bold",
+    fontFamily: FONTS.title,
   },
   subtitle: {
     fontSize: 16,
     color: "#FFFFFF",
     marginBottom: 30,
-    fontFamily: "DINNextRoundedLTPro-Regular",
+    fontFamily: FONTS.body,
   },
   inputContainer: {
     marginBottom: 20,
@@ -159,7 +150,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     color: "#FFFFFF",
     fontSize: 16,
-    fontFamily: "DINNextRoundedLTPro-Regular",
+    fontFamily: FONTS.body,
   },
   button: {
     backgroundColor: "#1CB0F6",
@@ -180,7 +171,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FFFFFF",
     fontSize: 14,
-    fontFamily: "DINNextRoundedLTPro-Bold",
+    fontFamily: FONTS.title,
   },
   buttonTextDisabled: {
     color: "#8E8E93",
@@ -192,7 +183,7 @@ const styles = StyleSheet.create({
   phoneButtonText: {
     color: "#1CB0F6",
     fontSize: 14,
-    fontFamily: "DINNextRoundedLTPro-Bold",
+    fontFamily: FONTS.title,
   },
   errorContainer: {
     height: 40,
@@ -202,12 +193,12 @@ const styles = StyleSheet.create({
   error: {
     color: "#FF3B30",
     textAlign: "center",
-    fontFamily: "DINNextRoundedLTPro-Regular",
+    fontFamily: FONTS.body,
   },
   message: {
     color: "#34C759",
     marginBottom: 15,
     textAlign: "center",
-    fontFamily: "DINNextRoundedLTPro-Regular",
+    fontFamily: FONTS.body,
   }
 });

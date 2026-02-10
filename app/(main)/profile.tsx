@@ -4,8 +4,7 @@ import { useRouter } from 'expo-router';
 import { Portal, Modal } from 'react-native-paper';
 import { supabase } from '../../src/services/supabase';
 import { Session } from '@supabase/supabase-js';
-import { useFonts } from 'expo-font';
-import { FONTS, FONT_ASSETS } from '../../src/services/fonts';
+import { FONTS } from '../../src/services/fonts';
 import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -32,14 +31,11 @@ export default function Perfil() {
   const [portalVisible, setPortalVisible] = useState(false);
   const [portalMessage, setPortalMessage] = useState('');
   const [portalTitle, setPortalTitle] = useState('');
-  const [logoutConfirmVisible, setLogoutConfirmVisible] = useState(false);
   const [weeklyXP, setWeeklyXP] = useState<number>(0);
   const [weeklyProgress, setWeeklyProgress] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]); // For L,M,M,J,V,S,D
   const [chartWidth, setChartWidth] = useState(0);
   const [chartHeight, setChartHeight] = useState(0);
   const [maxXP, setMaxXP] = useState<number>(750); // Valor por defecto
-
-  const [loaded] = useFonts(FONT_ASSETS);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -114,32 +110,12 @@ export default function Perfil() {
     }
   }
 
-  if (!loaded) return null;
-
   const navigateToSettings = () => {
     router.push('/(subtabs)/settings');
   };
 
   const navigateToFriends = () => {
     router.push('/(subtabs)/friends');
-  };
-
-  const showLogoutConfirmation = () => {
-    setLogoutConfirmVisible(true);
-  };
-
-  const handleLogout = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      router.replace('/(auth)/login');
-    } catch (error) {
-      console.error('Error:', error);
-      setPortalTitle('Error');
-      setPortalMessage('Failed to log out');
-      setPortalVisible(true);
-    }
-    setLogoutConfirmVisible(false);
   };
 
   // Función para calcular el límite dinámico de XP
@@ -307,44 +283,10 @@ export default function Perfil() {
                 <Text style={styles.buttonText}>ADD FRIENDS</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.logoutButton, { backgroundColor: theme.colors.error, shadowColor: theme.colors.error }]}
-              onPress={showLogoutConfirmation}
-            >
-              <Text style={styles.buttonText}>CERRAR SESIÓN</Text>
-            </TouchableOpacity>
           </View>
         )}
       </ScrollView>
     </View>
-    <Portal>
-      <>
-        <Modal
-          visible={logoutConfirmVisible}
-          onDismiss={() => setLogoutConfirmVisible(false)}
-          contentContainerStyle={[styles.modalContainer, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}
-        >
-          <View style={styles.modalContent}>
-            <Text style={[styles.modalTitle, { color: theme.colors.text }]}>Confirmar</Text>
-            <Text style={[styles.modalMessage, { color: theme.colors.text }]}>¿Estás seguro que deseas cerrar sesión?</Text>
-            <View style={styles.modalButtonsRow}>
-              <TouchableOpacity 
-                style={[styles.modalButton, styles.cancelButton, { backgroundColor: theme.colors.border }]}
-                onPress={() => setLogoutConfirmVisible(false)}
-              >
-                <Text style={styles.modalButtonText}>Cancelar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.modalButton, styles.confirmButton, { backgroundColor: theme.colors.primary }]}
-                onPress={handleLogout}
-              >
-                <Text style={styles.modalButtonText}>Confirmar</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-      </>
-    </Portal>
     </>
   );
 }
@@ -382,7 +324,7 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 24,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
     color: '#FFFFFF',
   },
   addFriendsButton: {
@@ -395,19 +337,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     shadowColor: '#1691C9',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 4,
-  },
-  logoutButton: {
-    backgroundColor: '#FF4B4B',
-    borderRadius: 14,
-    padding: 16,
-    alignItems: 'center',
-    marginTop: 20,
-    width: '100%',
-    shadowColor: '#CC3C3C',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 0,
@@ -426,7 +355,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
   },
   modalContainer: {
     backgroundColor: '#202f36',
@@ -441,13 +370,13 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
     color: '#FFFFFF',
     marginBottom: 10,
   },
   modalMessage: {
     fontSize: 16,
-    fontFamily: 'DINNextRoundedLTPro-Regular',
+    fontFamily: FONTS.body,
     color: '#FFFFFF',
     textAlign: 'center',
     marginBottom: 20,
@@ -462,7 +391,7 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
   },
   modalButtonsRow: {
     flexDirection: 'row',
@@ -489,18 +418,18 @@ const styles = StyleSheet.create({
   },
   statNumber: {
     fontSize: 18,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
     color: '#FFFFFF',
   },
   statLabel: {
     fontSize: 14,
-    fontFamily: 'DINNextRoundedLTPro-Regular',
+    fontFamily: FONTS.body,
     color: '#A0AEC0',
     marginTop: 4,
   },
   username: {
     fontSize: 16,
-    fontFamily: 'DINNextRoundedLTPro-Regular',
+    fontFamily: FONTS.body,
     color: '#A0AEC0',
     marginBottom: 8,
   },
@@ -521,12 +450,12 @@ const styles = StyleSheet.create({
   },
   weeklyProgressTitle: {
     fontSize: 18,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
     color: '#FFFFFF',
   },
   weeklyProgressValue: {
     fontSize: 18,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
     color: '#1CB0F6',
   },
   chartContainer: {

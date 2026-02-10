@@ -32,6 +32,7 @@ En **Project → Settings → Environment Variables** añade (para **Production*
 | `EXPO_PUBLIC_SUPABASE_URL` | URL del proyecto Supabase | `https://xxxx.supabase.co` |
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Anon key de Supabase | `eyJ...` |
 | `EXPO_PUBLIC_OPENROUTER_API_KEY` | (Opcional) Para generación con IA | `sk-or-...` |
+| `EXPO_PUBLIC_OPENROUTER_MODEL` | (Opcional) Modelo OpenRouter. Por defecto: `deepseek/deepseek-chat:free` | `deepseek/deepseek-r1-0528:free` |
 
 En build, Expo inyecta las `EXPO_PUBLIC_*` en el bundle; sin ellas, auth y API fallarán en producción.
 

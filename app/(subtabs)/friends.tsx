@@ -3,8 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'rea
 import { TextInput, ActivityIndicator, Portal, Modal } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { supabase } from '../../src/services/supabase';
-import { useFonts } from 'expo-font';
-import { FONTS, FONT_ASSETS } from '../../src/services/fonts';
+import { FONTS } from '../../src/services/fonts';
 
 interface User {
   id: string;
@@ -22,8 +21,6 @@ export default function FriendsScreen() {
   const [followingIds, setFollowingIds] = useState<string[]>([]);
   const [portalVisible, setPortalVisible] = useState(false);
   const [portalMessage, setPortalMessage] = useState('');
-  const [loaded] = useFonts(FONT_ASSETS);
-
   const loadFollowingIds = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -160,10 +157,6 @@ export default function FriendsScreen() {
     );
   };
 
-  if (!loaded) {
-    return null;
-  }
-
   return (
     <View style={styles.container}>
       <Portal>
@@ -240,11 +233,11 @@ const styles = StyleSheet.create({
   backText: {
     fontSize: 24,
     color: '#FFFFFF',
-    fontWeight: 'bold',
+    fontFamily: FONTS.title,
   },
   title: {
     fontSize: 24,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
     color: '#FFFFFF',
     marginLeft: 20,
   },
@@ -265,7 +258,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 20,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
     color: '#FFFFFF',
     marginBottom: 16,
   },
@@ -301,12 +294,12 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 16,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
     color: '#FFFFFF',
   },
   userUsername: {
     fontSize: 14,
-    fontFamily: 'DINNextRoundedLTPro-Regular',
+    fontFamily: FONTS.body,
     color: '#8F9EA6',
   },
   followButton: {
@@ -325,7 +318,7 @@ const styles = StyleSheet.create({
   followButtonText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
   },
   followButtonTextFollowing: {
     color: '#8F9EA6',
@@ -337,7 +330,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    fontFamily: 'DINNextRoundedLTPro-Regular',
+    fontFamily: FONTS.body,
     color: '#8F9EA6',
     textAlign: 'center',
     marginTop: 20,
@@ -351,7 +344,7 @@ const styles = StyleSheet.create({
   },
   portalText: {
     color: '#FFFFFF',
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
     fontSize: 16,
     textAlign: 'center',
   },

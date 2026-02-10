@@ -5,6 +5,7 @@ import { supabase } from '../../src/services/supabase';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '@/context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
+import { FONTS } from '../../src/services/fonts';
 import Markdown from 'react-native-markdown-display';
 
 interface Collection {
@@ -407,14 +408,14 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 16,
     textAlign: 'center',
-    fontFamily: 'DINNextRoundedLTPro-Regular',
+    fontFamily: FONTS.body,
   },
   title: {
     flex: 1,
     fontSize: 24,
     textAlign: 'center',
     marginVertical: 20,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
   },
   pathContainer: {
     paddingHorizontal: 40,
@@ -440,7 +441,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 10,
     textAlign: 'center',
-    fontFamily: 'DINNextRoundedLTPro-Regular',
+    fontFamily: FONTS.body,
   },
   editButton: { 
     padding: 10, 
@@ -449,7 +450,7 @@ const styles = StyleSheet.create({
   editButtonText: { 
     color: '#FFFFFF', 
     fontSize: 16, 
-    fontFamily: 'DINNextRoundedLTPro-Bold' 
+    fontFamily: FONTS.title 
   },
   modalContainer: {
     margin: 20,
@@ -468,7 +469,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 24,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
   },
   formGroup: {
     marginBottom: 16,
@@ -476,14 +477,14 @@ const styles = StyleSheet.create({
   settingLabel: {
     fontSize: 16,
     marginBottom: 8,
-    fontFamily: 'DINNextRoundedLTPro-Regular',
+    fontFamily: FONTS.body,
   },
   input: {
     height: 48,
     borderRadius: 8,
     paddingHorizontal: 16,
     fontSize: 16,
-    fontFamily: 'DINNextRoundedLTPro-Regular',
+    fontFamily: FONTS.body,
     width: '100%',
   },
   switchContainer: {
@@ -519,7 +520,7 @@ const styles = StyleSheet.create({
   updateButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
   },
   updateButtonTextDisabled: {
     color: '#A0A0A0',
@@ -535,7 +536,7 @@ const styles = StyleSheet.create({
   headerButtonText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
   },
   notesContent: {
     flex: 1,
@@ -544,31 +545,31 @@ const styles = StyleSheet.create({
   notesText: {
     fontSize: 16,
     lineHeight: 24,
-    fontFamily: 'DINNextRoundedLTPro-Regular',
+    fontFamily: FONTS.body,
   },
   notesHeading1: {
     fontSize: 28,
     lineHeight: 36,
     marginTop: 24,
     marginBottom: 16,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
   },
   notesHeading2: {
     fontSize: 24,
     lineHeight: 32,
     marginTop: 20,
     marginBottom: 12,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
   },
   notesHeading3: {
     fontSize: 20,
     lineHeight: 28,
     marginTop: 16,
     marginBottom: 8,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
   },
   notesBold: {
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
   },
   notesItalic: {
     fontStyle: 'italic',
@@ -582,14 +583,14 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   notesCode: {
-    fontFamily: 'Menlo',
+    fontFamily: FONTS.titleRegular,
     padding: 8,
     borderRadius: 4,
     borderWidth: 1,
     marginVertical: 8,
   },
   notesCodeInline: {
-    fontFamily: 'Menlo',
+    fontFamily: FONTS.titleRegular,
     paddingHorizontal: 4,
     paddingVertical: 2,
     borderRadius: 4,
@@ -608,7 +609,7 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
   },
   notesButtonContainer: {
     paddingHorizontal: 20,
@@ -625,6 +626,6 @@ const styles = StyleSheet.create({
   notesButtonTitle: {
     color: '#FFFFFF',
     fontSize: 20,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
   },
 });

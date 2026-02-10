@@ -3,6 +3,8 @@
 # Uso: npm run web  (o ./scripts/start-web.sh)
 
 set -e
+# nvm no es compatible con npm_config_prefix; quitarlo si está definido
+unset npm_config_prefix 2>/dev/null || true
 export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
 if [ -s "$NVM_DIR/nvm.sh" ]; then
   . "$NVM_DIR/nvm.sh"

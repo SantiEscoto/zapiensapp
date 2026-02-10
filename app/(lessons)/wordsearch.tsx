@@ -22,10 +22,7 @@ const WordSearch: React.FC = () => {
   const BackButton = () => (
     <TouchableOpacity 
       style={styles.backButton} 
-      onPress={() => router.push({
-        pathname: '/(subtabs)/lessons',
-        params: { id }
-      })}
+      onPress={() => router.back()}
     >
       <AntDesign name="arrow-left" size={24} color="#FFFFFF" />
     </TouchableOpacity>
@@ -285,10 +282,7 @@ const WordSearch: React.FC = () => {
 
         <TouchableOpacity 
           style={[styles.button, styles.buttonSecondary]}
-          onPress={() => router.push({
-            pathname: '/(subtabs)/lessons',
-            params: { id }
-          })}
+          onPress={() => router.back()}
         >
           <Text style={[styles.buttonText, styles.buttonTextSecondary]}>Volver a lecciones</Text>
         </TouchableOpacity>
@@ -361,7 +355,7 @@ const styles = StyleSheet.create({
   resultTitle: {
     color: '#FFFFFF',
     fontSize: 32,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     textAlign: 'center',
     marginTop: 60,
     marginBottom: 10,
@@ -382,7 +376,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   buttonTextSecondary: {
     color: '#1CB0F6',
@@ -436,7 +430,7 @@ const styles = StyleSheet.create({
   },
   letter: {
     fontSize: 22,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     color: '#FFFFFF',
   },
   questionsContainer: {
@@ -449,7 +443,7 @@ const styles = StyleSheet.create({
   },
   questionsTitle: {
     fontSize: 24,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     color: '#FFFFFF',
     marginBottom: 20,
     textAlign: 'left',
@@ -472,7 +466,7 @@ const styles = StyleSheet.create({
   },
   question: {
     fontSize: 16,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     color: '#FFFFFF',
     textAlign: 'left',
     lineHeight: 22,

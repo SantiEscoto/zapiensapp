@@ -1,5 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { FONTS } from '../../services/fonts';
 
 interface Props {
   children: ReactNode;
@@ -73,12 +74,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: FONTS.title,
     color: '#fff',
     marginBottom: 12,
   },
   message: {
     fontSize: 16,
+    fontFamily: FONTS.body,
     color: '#9ca3af',
     textAlign: 'center',
     marginBottom: 24,
@@ -98,11 +100,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
   },
   buttonTextSecondary: {
     color: '#1CB0F6',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
   },
 });

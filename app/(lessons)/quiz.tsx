@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, Alert, Animated, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '../../src/services/supabase';
-import { useFonts } from 'expo-font';
 import { FONTS } from '../../src/services/fonts';
 import { updateUserXP } from '../../src/services/xpService';
 
@@ -49,11 +48,6 @@ export default function QuizScreen() {
   const [questionResults, setQuestionResults] = useState<QuestionResult[]>([]);
 
   // Load custom fonts
-  const [loaded] = useFonts({
-    [FONTS.bold]: require('../../assets/fonts/DINNextRoundedLTPro-Bold.otf'),
-    [FONTS.regular]: require('../../assets/fonts/DINNextRoundedLTPro-Regular.otf'),
-  });
-
   // Memoized shuffle function for better performance
   const shuffle = useCallback((array: any[]) => {
     const newArray = [...array];
@@ -218,10 +212,7 @@ export default function QuizScreen() {
         </TouchableOpacity>
         <TouchableOpacity 
           style={[styles.button, styles.buttonSecondary]}
-          onPress={() => router.push({
-            pathname: '/(subtabs)/lessons',
-            params: { id }
-          })}
+          onPress={() => router.back()}
         >
           <Text style={[styles.buttonText, styles.buttonTextSecondary]}>Practicar con el modo aprender</Text>
         </TouchableOpacity>
@@ -230,7 +221,7 @@ export default function QuizScreen() {
   }
 
   // Render loading screen
-  if (!loaded || loading) {
+  if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <Text style={styles.loadingText}>Loading quiz...</Text>
@@ -302,7 +293,7 @@ const styles = StyleSheet.create({
   loadingText: {
     color: '#FFFFFF',
     fontSize: 18,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -318,7 +309,7 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: '#FFFFFF',
     fontSize: 24,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   progressBar: {
     flex: 1,
@@ -345,7 +336,7 @@ const styles = StyleSheet.create({
   reviewTitle: {
     color: '#FFFFFF',
     fontSize: 20,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     marginBottom: 16,
   },
   reviewItem: {
@@ -354,7 +345,7 @@ const styles = StyleSheet.create({
   reviewQuestion: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     marginBottom: 8,
   },
   reviewAnswer: {
@@ -376,18 +367,18 @@ const styles = StyleSheet.create({
   reviewLabel: {
     color: '#8E8E93',
     fontSize: 14,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     marginBottom: 4,
   },
   reviewText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
   },
   questionText: {
     color: '#FFFFFF',
     fontSize: 24,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     textAlign: 'center',
   },
   optionsContainer: {
@@ -404,13 +395,13 @@ const styles = StyleSheet.create({
   optionText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     textAlign: 'center',
   },
   resultTitle: {
     color: '#FFFFFF',
     fontSize: 32,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
     textAlign: 'center',
     marginTop: 60,
     marginBottom: 10,
@@ -418,7 +409,7 @@ const styles = StyleSheet.create({
   resultScore: {
     color: '#8E8E93',
     fontSize: 18,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.body,
     textAlign: 'center',
     marginBottom: 30,
   },
@@ -437,12 +428,12 @@ const styles = StyleSheet.create({
   scoreText: {
     color: '#FFFFFF',
     fontSize: 48,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   scoreSubtext: {
     color: '#8E8E93',
     fontSize: 16,
-    fontFamily: 'DINNextRoundedLTPro-Regular',
+    fontFamily: FONTS.body,
   },
   button: {
     backgroundColor: '#1CB0F6',
@@ -459,7 +450,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.title,
   },
   buttonTextSecondary: {
     color: '#1CB0F6',

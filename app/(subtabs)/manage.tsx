@@ -6,6 +6,7 @@ import { useLocalSearchParams, router } from 'expo-router';
 import { generateFolderNotes } from '../../src/services/ai/integration/openrouter';
 import { useTheme } from '@/context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
+import { FONTS } from '../../src/services/fonts';
 
 interface Collection {
   id: string;
@@ -308,7 +309,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 24,
     textAlign: 'center',
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
   },
   formContainer: {
     margin: 16,
@@ -327,14 +328,14 @@ const styles = StyleSheet.create({
   settingLabel: {
     fontSize: 16,
     marginBottom: 8,
-    fontFamily: 'DINNextRoundedLTPro-Regular',
+    fontFamily: FONTS.body,
   },
   input: {
     height: 48,
     borderRadius: 8,
     paddingHorizontal: 16,
     fontSize: 16,
-    fontFamily: 'DINNextRoundedLTPro-Regular',
+    fontFamily: FONTS.body,
     width: '100%',
     borderWidth: 1,
   },
@@ -363,7 +364,7 @@ const styles = StyleSheet.create({
   collectionName: {
     marginLeft: 8,
     fontSize: 16,
-    fontFamily: 'DINNextRoundedLTPro-Regular',
+    fontFamily: FONTS.body,
   },
   updateButton: {
     borderRadius: 14,
@@ -378,7 +379,7 @@ const styles = StyleSheet.create({
   updateButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
   },
   updateButtonTextDisabled: {
     color: '#A0A0A0',
@@ -388,7 +389,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 8,
     textAlign: 'center',
-    fontFamily: 'DINNextRoundedLTPro-Regular',
+    fontFamily: FONTS.body,
   },
   modalContainer: {
     flex: 1,
@@ -401,13 +402,13 @@ const styles = StyleSheet.create({
   },
   generationTitle: {
     fontSize: 24,
-    fontFamily: 'DINNextRoundedLTPro-Bold',
+    fontFamily: FONTS.title,
     marginTop: 20,
     marginBottom: 12,
   },
   generationText: {
     fontSize: 16,
-    fontFamily: 'DINNextRoundedLTPro-Regular',
+    fontFamily: FONTS.body,
     textAlign: 'center',
     lineHeight: 24,
   },

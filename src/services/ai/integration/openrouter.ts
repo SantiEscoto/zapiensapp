@@ -28,98 +28,201 @@ interface Collection {
 
 const OPENROUTER_API_KEY = process.env.EXPO_PUBLIC_OPENROUTER_API_KEY;
 const BASE_URL = 'https://openrouter.ai/api/v1';
-const MAX_RETRIES = 2; // Maximum number of retries for failed requests
+const REQUEST_TIMEOUT_MS = 5000;
+
+/** Modelos FREE en orden de preferencia: fallback automático si uno falla (No endpoints, 429, timeout) */
+export const OPENROUTER_FALLBACK_MODELS = [
+  'arcee-ai/trinity-large-preview:free',
+  'stepfun/step-3.5-flash:free',
+  'nvidia/nemotron-3-nano-30b-a3b:free',
+] as const;
+
+const OPENROUTER_MODEL =
+  process.env.EXPO_PUBLIC_OPENROUTER_MODEL ?? OPENROUTER_FALLBACK_MODELS[0];
 
 const headers = {
   'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
   'Content-Type': 'application/json',
   'HTTP-Referer': 'https://zapcards.app',
-  'X-Title': 'ZapCards'
+  'X-Title': 'ZapCards',
 };
 
+/** Mensaje amigable cuando OpenRouter rechaza por política de privacidad (modelos free) */
+const DATA_POLICY_ERROR_USER_MESSAGE =
+  'Los modelos gratuitos requieren permitir "Model Training" en tu cuenta. Entra en https://openrouter.ai/settings/privacy y activa la opción de entrenamiento para modelos free, luego vuelve a intentar.';
+
+function normalizeOpenRouterError(message: string): string {
+  if (/data policy|No endpoints found|Free model training/i.test(message)) {
+    return DATA_POLICY_ERROR_USER_MESSAGE;
+  }
+  return message;
+}
+
+export interface OpenRouterFallbackResult {
+  content: string;
+  modelUsed: string;
+}
+
+/** Cuerpo de request sin model (se inyecta por intento) */
+type OpenRouterBody = {
+  messages: Array<{ role: string; content: string }>;
+  temperature?: number;
+  max_tokens?: number;
+};
+
+/**
+ * Llama a OpenRouter probando cada modelo en orden. Timeout 5s por intento.
+ * Maneja "No endpoints found", 429, timeouts y errores de red.
+ */
+export async function callOpenRouterWithFallback(
+  body: OpenRouterBody,
+  options: { timeoutMs?: number } = {}
+): Promise<OpenRouterFallbackResult> {
+  const timeoutMs = options.timeoutMs ?? REQUEST_TIMEOUT_MS;
+  const models = [...OPENROUTER_FALLBACK_MODELS];
+  let lastError: Error | null = null;
+
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+
+    try {
+      const requestPromise = fetch(`${BASE_URL}/chat/completions`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          model,
+          messages: body.messages,
+          temperature: body.temperature ?? 0.7,
+          max_tokens: body.max_tokens ?? 2000,
+        }),
+      });
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Request timeout')), timeoutMs)
+      );
+      const response = await Promise.race([requestPromise, timeoutPromise]);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({})) as { error?: { message?: string } };
+        const rawMsg = errorData.error?.message || `HTTP ${response.status}`;
+        throw new Error(normalizeOpenRouterError(rawMsg));
+      }
+
+      const data = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
+      const content = data.choices?.[0]?.message?.content;
+      if (content == null || content === '') {
+        throw new Error('No content generated');
+      }
+
+      console.log(`✅ ZAPIENS IA: modelo usado "${model}"`);
+      return { content: content.trim(), modelUsed: model };
+    } catch (err: unknown) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      const message = lastError.message || 'Unknown error';
+      console.warn(`❌ Modelo ${model} falló:`, message);
+      if (i === models.length - 1) {
+        const friendlyMessage = normalizeOpenRouterError(message);
+        throw new Error(friendlyMessage);
+      }
+    }
+  }
+
+  const finalMessage = lastError?.message ?? 'No endpoints available';
+  throw new Error(normalizeOpenRouterError(finalMessage));
+}
+
+// ——— Cache en memoria para lecciones (evita re-generar mismo topic en la sesión) ———
+const lessonCache = new Map<string, string>();
+
+export interface GenerateLessonResponse {
+  content: string;
+  modelUsed?: string;
+  error?: string;
+}
+
+const PROMPT_TEMPLATE_LESSON = (topic: string) =>
+  `Genera una lección gamificada sobre "${topic}".
+
+REQUIREMENTS:
+- Estructura clara: introducción, conceptos clave, ejemplos, resumen.
+- Tono didáctico y ameno, apto para estudiar con flashcards después.
+- Incluye 1-2 preguntas de autoevaluación al final.
+- Responde en el mismo idioma que el tema.`;
+
+/**
+ * Genera contenido de lección gamificada para un tema. Usa Trinity → StepFun → Nemotron con fallback.
+ * Cache en memoria por topic para no re-generar en la misma sesión.
+ */
+export async function generateLesson(topic: string, _maxRetries = 3): Promise<GenerateLessonResponse> {
+  const cacheKey = topic.trim().toLowerCase();
+  const cached = lessonCache.get(cacheKey);
+  if (cached) {
+    return { content: cached };
+  }
+
+  try {
+    const { content, modelUsed } = await callOpenRouterWithFallback({
+      messages: [
+        {
+          role: 'system',
+          content:
+            'You are an expert educator. Generate engaging, gamified lesson content that is clear and suitable for turning into flashcards. Use the same language as the topic.',
+        },
+        { role: 'user', content: PROMPT_TEMPLATE_LESSON(topic) },
+      ],
+      temperature: 0.7,
+      max_tokens: 2000,
+    });
+    lessonCache.set(cacheKey, content);
+    return { content, modelUsed };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to generate lesson';
+    console.error('generateLesson error:', message);
+    return { content: '', error: message };
+  }
+}
 
 export async function generateFlashCards(content: string, topics: string, existingCards: FlashCard[] = [], retryCount = 0): Promise<GenerateFlashCardsResponse> {
   try {
-    // Create a context string from existing cards
     const existingCardsContext = existingCards.length > 0
-      ? `\nExisting flashcards (DO NOT duplicate these):\n${existingCards.map(card => 
+      ? `\nExisting flashcards (DO NOT duplicate these):\n${existingCards.map(card =>
           `- Front: ${card.front_content}\n  Back: ${card.back_content}`
         ).join('\n')}\n`
       : '';
 
-    const prompt = `Generate study flashcards based on the following content and topics. The content is: "${content}"
+    const prompt = `Generate study flashcards from the following content and topics.
 
-    Topics: ${topics}
+Content: "${content}"
 
-    ${existingCardsContext}
+Topics: ${topics}
 
-    Instructions:
-    1. Generate clear and concise flashcards
-    2. Each flashcard should have a front (question/concept) and back (answer/explanation)
-    3. Make sure the content is accurate and educational
-    4. Focus on key concepts and important details
-    5. Include a mix of definition, concept, and relationship cards
-    6. Ensure the content is relevant to the specified topics
-    7. Format each card as a JSON object with front_content and back_content fields
-    8. Return an array of card objects
+${existingCardsContext}
 
-    Example format:
-    [
-      {
-        "front_content": "What is the capital of France?",
-        "back_content": "Paris"
-      },
-      {
-        "front_content": "Define photosynthesis",
-        "back_content": "The process by which plants convert light energy into chemical energy"
-      }
-    ]`;
+Goal: Each card has a term (front) and a definition (back). The term should be a short, scannable label so users can quickly tell cards apart. The definition should be concise and distinctive—enough to explain the concept and differentiate it from other cards.
 
-    const response = await fetch(`${BASE_URL}/chat/completions`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        model: 'deepseek/deepseek-r1:free',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an AI assistant specialized in generating study flashcards based on user-provided information. Your task is to generate high-quality study flashcards efficiently. You MUST only respond with valid JSON arrays.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 2000,
-      })
+Instructions:
+- front_content: The concept name or label in few words (e.g. "Ajolote", "Jaguar", "Photosynthesis"). Keep it brief and intuitive so it works well when comparing many cards.
+- back_content: A short description that captures key traits and distinguishes this concept from others. Use the minimum needed; small distinctions between cards are enough.
+- Write term and definition in the same language as the content above.
+- Reply with a single JSON array of objects with keys front_content and back_content. No other text before or after the array.
+
+Example structure:
+[
+  {"front_content": "Ajolote", "back_content": "Anfibio endémico de México, regenera extremidades y mantiene aspecto juvenil."},
+  {"front_content": "Jaguar", "back_content": "Felino más grande de América, pelaje amarillo con manchas negras, habita selvas tropicales."}
+]`;
+
+    const { content: generatedContent } = await callOpenRouterWithFallback({
+      messages: [
+        {
+          role: 'system',
+          content: 'You generate flashcards. front_content is a short concept label (few words). back_content is a concise, distinctive definition. Output only a valid JSON array of objects with "front_content" and "back_content". Use the same language as the user content for the card text.',
+        },
+        { role: 'user', content: prompt },
+      ],
+      temperature: 0.7,
+      max_tokens: 2000,
     });
-
-    // Check if the response is ok
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({})) as { error?: { message?: string } };
-      const errorMessage = errorData.error?.message || `API request failed with status ${response.status}`;
-      
-      // Implement retry logic for server errors (5xx) or rate limiting (429)
-      if ((response.status >= 500 || response.status === 429) && retryCount < MAX_RETRIES) {
-        console.log(`Retrying request (${retryCount + 1}/${MAX_RETRIES})...`);
-        // Exponential backoff: wait longer between each retry
-        const backoffTime = Math.pow(2, retryCount) * 1000;
-        await new Promise(resolve => setTimeout(resolve, backoffTime));
-        return generateFlashCards(content, topics, existingCards, retryCount + 1);
-      }
-      
-      throw new Error(errorMessage);
-    }
-
-    const data = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
-    const generatedContent = data.choices?.[0]?.message?.content;
-    if (!generatedContent) {
-      throw new Error('No content generated');
-    }
-
-    // Clean and normalize the response content
-    const cleanedContent = generatedContent.trim();
+    const cleanedContent = generatedContent;
     
     // Try direct JSON parse first
     try {
@@ -173,37 +276,18 @@ export async function generateFlashCards(content: string, topics: string, existi
 
 export async function generateCollectionInfo(topic: string, topics: string = 'General'): Promise<GenerateCollectionInfoResponse> {
   try {
-    // Primero detectamos el idioma del input
     const languageDetectionPrompt = `Detect the language of this text and respond with only the ISO 639-1 language code (e.g., 'es' for Spanish, 'en' for English, 'ja' for Japanese): "${topic}"`;
 
-    const languageResponse = await fetch(`${BASE_URL}/chat/completions`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        model: 'deepseek/deepseek-r1:free',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a language detection expert. Respond only with the ISO 639-1 language code.'
-          },
-          {
-            role: 'user',
-            content: languageDetectionPrompt
-          }
-        ],
-        temperature: 0.1,
-        max_tokens: 10,
-      })
+    const { content: langContent } = await callOpenRouterWithFallback({
+      messages: [
+        { role: 'system', content: 'You are a language detection expert. Respond only with the ISO 639-1 language code.' },
+        { role: 'user', content: languageDetectionPrompt },
+      ],
+      temperature: 0.1,
+      max_tokens: 10,
     });
+    const detectedLanguage = langContent.trim() || 'en';
 
-    if (!languageResponse.ok) {
-      throw new Error('Failed to detect language');
-    }
-
-    const languageData = await languageResponse.json() as { choices?: Array<{ message?: { content?: string } }> };
-    const detectedLanguage = languageData.choices?.[0]?.message?.content?.trim() || 'en';
-
-    // Ahora generamos el contenido en el idioma detectado
     const prompt = `Based on the following topic or concept, generate a short name and a detailed description that can be used to create flashcards. The topic is: "${topic}"
 
     Topics: ${topics}
@@ -246,40 +330,18 @@ export async function generateCollectionInfo(topic: string, topics: string = 'Ge
     NAME: [short and direct name]
     DESCRIPTION: [detailed and structured description]`;
 
-    const response = await fetch(`${BASE_URL}/chat/completions`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        model: 'deepseek/deepseek-r1:free',
-        messages: [
-          {
-            role: 'system',
-            content: `You are an expert in creating structured educational content. Your goal is to generate concise names and detailed descriptions that facilitate the creation of effective flashcards. The description should be comprehensive enough to generate at least 10-15 flashcards. Include specific facts, examples, and relationships between concepts. Make sure each section has enough detail to create multiple flashcards. IMPORTANT: Do not use any formatting symbols in the generated text, except for emojis in the name. Generate the response in ${detectedLanguage} language.`
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 2000,
-      })
+    const { content: generatedContent } = await callOpenRouterWithFallback({
+      messages: [
+        {
+          role: 'system',
+          content: `You are an expert in creating structured educational content. Your goal is to generate concise names and detailed descriptions that facilitate the creation of effective flashcards. The description should be comprehensive enough to generate at least 10-15 flashcards. Include specific facts, examples, and relationships between concepts. Make sure each section has enough detail to create multiple flashcards. IMPORTANT: Do not use any formatting symbols in the generated text, except for emojis in the name. Generate the response in ${detectedLanguage} language.`,
+        },
+        { role: 'user', content: prompt },
+      ],
+      temperature: 0.7,
+      max_tokens: 2000,
     });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({})) as { error?: { message?: string } };
-      const errorMessage = errorData.error?.message || `API request failed with status ${response.status}`;
-      throw new Error(errorMessage);
-    }
-
-    const data = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
-    const generatedContent = data.choices?.[0]?.message?.content;
-    
-    if (!generatedContent) {
-      throw new Error('No content generated');
-    }
-
-    const content = generatedContent.trim();
+    const content = generatedContent;
     const nameMatch = content.match(/NAME:\s*(.*?)(?:\n|$)/);
     const descriptionMatch = content.match(/DESCRIPTION:\s*(.*?)(?:\n|$)/s);
 
@@ -302,7 +364,7 @@ export async function generateCollectionInfo(topic: string, topics: string = 'Ge
   }
 }
 
-export async function generateFolderNotes(collections: Collection[], retryCount = 0): Promise<GenerateNotesResponse> {
+export async function generateFolderNotes(collections: Collection[]): Promise<GenerateNotesResponse> {
   try {
     const prompt = `Based on the following collections and their content, generate clear and concise study notes that summarize the key concepts and relationships between them. The collections are:
 
@@ -322,50 +384,19 @@ Follow these rules:
 
 The notes should be written in a way that helps understand how these topics relate to each other and form a broader knowledge context.`;
 
-    const response = await fetch(`${BASE_URL}/chat/completions`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        model: 'deepseek/deepseek-r1:free',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an expert in creating concise and effective study notes. Your goal is to generate clear, structured notes that help students understand relationships between different topics.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 2000,
-      })
+    const { content } = await callOpenRouterWithFallback({
+      messages: [
+        {
+          role: 'system',
+          content: 'You are an expert in creating concise and effective study notes. Your goal is to generate clear, structured notes that help students understand relationships between different topics.',
+        },
+        { role: 'user', content: prompt },
+      ],
+      temperature: 0.7,
+      max_tokens: 2000,
     });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({})) as { error?: { message?: string } };
-      const errorMessage = errorData.error?.message || `API request failed with status ${response.status}`;
-      
-      if ((response.status >= 500 || response.status === 429) && retryCount < MAX_RETRIES) {
-        console.log(`Retrying request (${retryCount + 1}/${MAX_RETRIES})...`);
-        const backoffTime = Math.pow(2, retryCount) * 1000;
-        await new Promise(resolve => setTimeout(resolve, backoffTime));
-        return generateFolderNotes(collections, retryCount + 1);
-      }
-      
-      throw new Error(errorMessage);
-    }
-
-    const data = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
-    const generatedContent = data.choices?.[0]?.message?.content;
-    
-    if (!generatedContent) {
-      throw new Error('No content generated');
-    }
-
-    return {
-      notes: generatedContent.trim()
-    };
+    return { notes: content };
 
   } catch (error: any) {
     console.error('Error generating folder notes:', error);

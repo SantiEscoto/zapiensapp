@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, ImageSourc
 import { ActivityIndicator } from 'react-native-paper';
 import { supabase } from '../../src/services/supabase';
 import { useTheme } from '../../src/context/ThemeContext';
+import { FONTS } from '../../src/services/fonts';
 
 interface UserRanking {
   user_id: string;
@@ -406,6 +407,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 16,
+    fontFamily: FONTS.body,
     textAlign: 'center',
     marginVertical: 16,
     paddingHorizontal: 24,
@@ -419,11 +421,11 @@ const styles = StyleSheet.create({
   retryButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontFamily: FONTS.title,
     marginBottom: 16,
   },
   tabContainer: {
@@ -441,7 +443,7 @@ const styles = StyleSheet.create({
   },
   tabButtonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
   },
   userRankContainer: {
     borderRadius: 14,
@@ -451,11 +453,12 @@ const styles = StyleSheet.create({
   },
   userRankTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: FONTS.title,
     marginBottom: 8,
   },
   userRankText: {
     fontSize: 16,
+    fontFamily: FONTS.body,
   },
   rankingsList: {
     flex: 1,
@@ -478,7 +481,7 @@ const styles = StyleSheet.create({
   },
   rankPosition: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: FONTS.title,
   },
   userInfoContainer: {
     flex: 1,
@@ -510,10 +513,11 @@ const styles = StyleSheet.create({
   rankUsername: {
     flex: 1,
     fontSize: 16,
+    fontFamily: FONTS.body,
   },
   rankScore: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: FONTS.title,
     marginLeft: 8,
   },
   comingSoonContainer: {
@@ -523,6 +527,6 @@ const styles = StyleSheet.create({
   },
   comingSoonText: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
   },
 });
