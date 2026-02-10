@@ -1,18 +1,26 @@
-import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
-import { useRouter } from "expo-router";
+import { useCallback, useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, Image, Platform } from "react-native";
+import { useRouter, useFocusEffect } from "expo-router";
 import { FONTS } from '../../src/services/fonts';
 import { useTheme } from '../../src/context/ThemeContext';
-import { CharacterWavesBackground } from '../../src/components/common/CharacterWavesBackground';
+import { FinisherHeaderBackground } from '../../src/components/common/FinisherHeaderBackground';
 
 export default function Welcome() {
   const router = useRouter();
   const { theme } = useTheme();
   const { colors } = theme;
+  const [backgroundKey, setBackgroundKey] = useState(0);
+
+  useFocusEffect(
+    useCallback(() => {
+      setBackgroundKey((k) => k + 1);
+    }, [])
+  );
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <CharacterWavesBackground color={colors.textSecondary} />
-      <View style={styles.contentContainer}>
+      {Platform.OS === 'web' && <FinisherHeaderBackground key={backgroundKey} />}
+      <View style={[styles.contentContainer, styles.contentAboveBackground]}>
         <Image
           source={require('../../assets/logo.png')}
           style={[styles.logo, { tintColor: colors.text }]}
@@ -23,7 +31,7 @@ export default function Welcome() {
           source={require('../../assets/full_logo.png')}
           style={[styles.fullLogo, { tintColor: colors.text }]}
           resizeMode="contain"
-          accessibilityLabel="ZapCards"
+          accessibilityLabel="Zapiens"
         />
         <Text style={[styles.heroTitle, { color: colors.text }]}>
           ONE APP TO{"\n"}LEARN IT ALL
@@ -33,7 +41,7 @@ export default function Welcome() {
         </Text>
       </View>
 
-      <View style={styles.buttonContainer}>
+      <View style={[styles.buttonContainer, styles.contentAboveBackground]}>
         <TouchableOpacity
           style={[styles.getStartedButton, { backgroundColor: colors.primary }]}
           onPress={() => router.push('/register')}
@@ -67,6 +75,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 24,
+  },
+  contentAboveBackground: {
+    zIndex: 1,
   },
   logo: {
     width: 80,
@@ -106,9 +117,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   getStartedText: {
-    color: '#FFFFFF',
+    color: '#FFFFFF', // texto sobre primary (contraste por tema)
     fontSize: 16,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.title,
     letterSpacing: 1,
   },
   loginButton: {
@@ -121,7 +132,7 @@ const styles = StyleSheet.create({
   },
   loginText: {
     fontSize: 16,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.title,
     letterSpacing: 0.5,
   },
 });

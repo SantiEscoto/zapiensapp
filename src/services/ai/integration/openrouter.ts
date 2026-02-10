@@ -43,8 +43,8 @@ const OPENROUTER_MODEL =
 const headers = {
   'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
   'Content-Type': 'application/json',
-  'HTTP-Referer': 'https://zapcards.app',
-  'X-Title': 'ZapCards',
+  'HTTP-Referer': 'https://zapiens.app',
+  'X-Title': 'Zapiens',
 };
 
 /** Mensaje amigable cuando OpenRouter rechaza por política de privacidad (modelos free) */

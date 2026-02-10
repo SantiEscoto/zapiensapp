@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { supabase } from '../../src/services/supabase';
 import { FONTS } from '../../src/services/fonts';
+import { useTheme } from '../../src/context/ThemeContext';
 
 // Configure auto-refresh for authentication session
 AppState.addEventListener('change', (state) => {
@@ -17,12 +18,14 @@ AppState.addEventListener('change', (state) => {
 // Definición del componente principal de la pantalla de Login
 export default function Login() {
   const router = useRouter();
+  const { theme } = useTheme();
+  const { colors } = theme;
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const isFormValid = emailOrUsername.length > 0 && password.length > 0;  // Updated this line
+  const isFormValid = emailOrUsername.length > 0 && password.length > 0;
 
   async function signInWithEmail() {
     setLoading(true);
@@ -97,55 +100,22 @@ export default function Login() {
     }
   }
 
-  async function signInWithGoogle() {
-    setLoading(true);
-    setError("");
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-          // Scopes requeridos por Supabase para obtener email (evita 500 "Error getting user email from external provider")
-          scopes: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
-        }
-      });
-
-      if (error) {
-        setError("Error al iniciar sesión con Google");
-        return;
-      }
-
-      // The OAuth flow will redirect the user, so we don't need to handle
-      // the success case here as it will be handled by the OAuth callback
-      
-    } catch (error) {
-      console.error('Error during Google sign in:', error);
-      setError("Ha ocurrido un error. Por favor, inténtelo de nuevo.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   // Renderizado de la interfaz del formulario de login
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <TouchableOpacity 
         style={styles.backButton}
         onPress={() => router.replace('/welcome')}
       >
-        <Text style={styles.backArrow}>←</Text>
+        <Text style={[styles.backArrow, { color: colors.text }]}>←</Text>
       </TouchableOpacity>
-      <Image
-        source={require('../../assets/welcome.png')}
-        style={styles.welcomeImage}
-      />
-      <Text style={styles.title}>Ingresa tus datos</Text>
+      <Text style={[styles.title, { color: colors.text }]}>Ingresa tus datos</Text>
       
-      <View style={styles.inputContainer}>
+      <View style={[styles.inputContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <TextInput
-          style={[styles.input, styles.topInput]}
+          style={[styles.input, styles.topInput, { backgroundColor: colors.card, color: colors.text, borderBottomColor: colors.border }]}
           placeholder="Correo electrónico o nombre de usuario"
-          placeholderTextColor="#8E8E93"
+          placeholderTextColor={colors.textSecondary}
           value={emailOrUsername}
           onChangeText={setEmailOrUsername}
           autoCapitalize="none"
@@ -154,9 +124,9 @@ export default function Login() {
         
         <View style={styles.passwordContainer}>
           <TextInput
-            style={[styles.input, styles.bottomInput]}
+            style={[styles.input, styles.bottomInput, { backgroundColor: colors.card, color: colors.text }]}
             placeholder="Password"
-            placeholderTextColor="#8E8E93"
+            placeholderTextColor={colors.textSecondary}
             value={password}
             onChangeText={setPassword}
             secureTextEntry={!showPassword}
@@ -174,50 +144,38 @@ export default function Login() {
       </View>
 
       <View style={styles.errorContainer}>
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+        {error ? <Text style={[styles.error, { color: colors.error }]}>{error}</Text> : null}
       </View>
       
       <TouchableOpacity 
-        style={[styles.button, !isFormValid && styles.buttonDisabled]}
+        style={[
+          styles.button,
+          isFormValid
+            ? { backgroundColor: colors.primary, shadowColor: colors.primary }
+            : { backgroundColor: colors.card, shadowColor: colors.border },
+        ]}
         onPress={signInWithEmail}
         disabled={loading || !isFormValid}
       >
-        <Text style={[styles.buttonText, !isFormValid && styles.buttonTextDisabled]}>
+        <Text style={[styles.buttonText, { color: isFormValid ? '#FFFFFF' : colors.textSecondary }]}>
           {loading ? "• • •" : "ACCEDER"}
         </Text>
       </TouchableOpacity>
 
       <Link href="/forgot-password" asChild>
         <TouchableOpacity style={styles.link}>
-          <Text style={styles.linkText}>RESTABLECER CONTRASEÑA</Text>
+          <Text style={[styles.linkText, { color: colors.primary }]}>RESTABLECER CONTRASEÑA</Text>
         </TouchableOpacity>
       </Link>
 
-      <View style={styles.divider}>
-        <View style={styles.dividerLine} />
-        <Text style={styles.dividerText}>o</Text>
-        <View style={styles.dividerLine} />
-      </View>
-
-      <TouchableOpacity 
-        style={styles.socialButton}
-        onPress={signInWithGoogle}
-        disabled={loading}
-      >
-        <Image source={require('../../assets/google-icon.png')} style={styles.socialIcon} />
-        <Text style={styles.socialButtonText}>
-          {loading ? "• • •" : "ACCEDER CON GOOGLE"}
-        </Text>
-      </TouchableOpacity>
-
       <View style={styles.termsContainer}>
-        <Text style={styles.termsText}>Al registrarse en ZapCards, usted acepta nuestros </Text>
+        <Text style={[styles.termsText, { color: colors.textSecondary }]}>Al registrarse en Zapiens, usted acepta nuestros </Text>
         <TouchableOpacity>
-          <Text style={styles.termsLink}>Términos</Text>
+          <Text style={[styles.termsLink, { color: colors.primary }]}>Términos</Text>
         </TouchableOpacity>
-        <Text style={styles.termsText}> y </Text>
+        <Text style={[styles.termsText, { color: colors.textSecondary }]}> y </Text>
         <TouchableOpacity>
-          <Text style={styles.termsLink}>Políticas de Privacidad</Text>
+          <Text style={[styles.termsLink, { color: colors.primary }]}>Políticas de Privacidad</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -226,12 +184,6 @@ export default function Login() {
 
 // Estilos para los componentes de la pantalla de login
 const styles = StyleSheet.create({
-  welcomeImage: {
-    width: '100%',
-    height: 200,
-    resizeMode: 'contain',
-    marginBottom: 20,
-  },
   passwordContainer: {
     position: 'relative',
     width: '100%',
@@ -252,8 +204,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    color: "#FFFFFF",
-    marginTop: 40,
+    marginTop: 48,
     textAlign: "center",
     marginBottom: 20,
     fontFamily: FONTS.title,
@@ -296,13 +247,6 @@ const styles = StyleSheet.create({
   linkText: {
     color: "#1CB0F6", // Color azul claro
     fontSize: 14, // Tamaño del texto
-    fontFamily: FONTS.title, // Fuente personalizada
-  },
-  // Texto del botón social (como Google)
-  socialButtonText: {
-    color: "#FFFFFF", // Texto en blanco
-    fontSize: 14, // Tamaño del texto
-    textAlign: "center", // Alineación centrada
     fontFamily: FONTS.title, // Fuente personalizada
   },
   // Estilo del botón principal
@@ -362,49 +306,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     minHeight: 20,
   },
-  // Contenedor de la línea divisoria
-  divider: {
-    flexDirection: "row", // Elementos alineados horizontalmente
-    alignItems: "center", // Alineación vertical centrada
-    marginVertical: 20, // Margen arriba y abajo
-  },
-  // Línea divisoria
-  dividerLine: {
-    flex: 1, // Ocupa el máximo espacio disponible
-    height: 1, // Altura de la línea
-    backgroundColor: "#2C3444", // Color gris oscuro
-  },
-  // Texto de la línea divisoria
-  dividerText: {
-    color: "#8E8E93", // Color gris claro
-    paddingHorizontal: 10, // Espaciado horizontal
-    fontSize: 14, // Tamaño del texto
-  },
-  // Botón de acceso social (como Google)
-  socialButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#202f36",
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 10,
-    borderWidth: 1,           // Grosor del borde
-    borderColor: "#37464f",   // Color del borde
-    shadowColor: "#37464f",   // Color de la sombra
-    shadowOffset: { width: 0, height: 3 }, // Desplazamiento de la sombra
-    shadowOpacity: 1,        // Opacidad completa
-    shadowRadius: 0,         // Controla la difusión de la sombra
-    elevation: 4,            // Necesario para sombras en Android
-  },
-
-  // Icono para el botón social
-  socialIcon: {
-    width: 24, // Ancho del icono
-    height: 24, // Altura del icono
-    marginRight: 12, // Espaciado a la derecha del icono
-  },
-  // Contenedor de términos y condiciones
   termsContainer: {
     flexDirection: "row", // Elementos alineados horizontalmente
     flexWrap: "wrap", // Permite que los elementos pasen a la siguiente línea si no caben

@@ -1,5 +1,5 @@
 /**
- * Rutas centralizadas para ZapCards.
+ * Rutas centralizadas para Zapiens.
  * Flashcards = niveles sueltos; Lessons = mundos con niveles (nested).
  */
 

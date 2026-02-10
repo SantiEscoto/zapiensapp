@@ -151,7 +151,7 @@ const EmptyState = memo(({ onCreatePress }: { onCreatePress: () => void }) => {
   const { theme } = useTheme();
   return (
     <View style={styles.emptyStateContainer}>
-      <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>Bienvenido, aprenda a crear ZapCards</Text>
+      <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>Bienvenido, aprende a crear con Zapiens</Text>
       <Text style={[styles.emptySubtitle, { color: theme.colors.textSecondary }]}>
         Diseña tu primera colección de flashcards
       </Text>
